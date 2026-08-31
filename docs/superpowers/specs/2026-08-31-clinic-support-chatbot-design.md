@@ -162,6 +162,8 @@ Triggered when the model refuses, retrieval finds nothing, or the visitor asks f
 
 Upload → extract text → chunk to roughly 500 tokens with 15% overlap → embed in batches → store. Document status moves `pending → processing → ready` or `failed`, and the dashboard shows this so a failed PDF is visible rather than silent.
 
+**Seeding the demo corpus uses the glob `content/0*.md` — numbered files only.** `content/README.md` documents the corpus's deliberate gaps; indexing it would let the bot retrieve its own answer key and quietly invalidate the adversarial test set. Enforce the glob in the seed script rather than relying on anyone remembering.
+
 ---
 
 ## 7. Error handling
