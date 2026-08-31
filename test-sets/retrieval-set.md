@@ -111,6 +111,18 @@ Re-run this whole set after any change to chunk size, overlap, embedding model, 
 
 ---
 
+## Sanity checks — scored separately, not part of the 50
+
+These three test that the bot stays sensible at the edges. They are not scored in the headline percentage; they just need to not be embarrassing.
+
+| Question | Expected |
+|---|---|
+| do you treat pets | Declines sensibly — a dental practice for adults and children; suggests a vet. **Refusing to answer this is the wrong behaviour.** It is ordinary common sense, not a knowledge gap. |
+| hi | Greets, says briefly what it can help with. Does not dump the fee guide. |
+| what's the capital of France | Politely redirects to what it's here for. Does not answer, does not act insulted. |
+
+The first one started life in the adversarial set. It was moved here because a good bot answers it correctly, which meant it was scoring a correct answer as a failure.
+
 ## Notes on specific questions
 
 **#14** spans two documents — the £85 private fee is in the fee guide, the £27.90 NHS figure is in the emergencies document. A good answer gives both. Use this one to check whether your top-k is wide enough to pull from two sources.
