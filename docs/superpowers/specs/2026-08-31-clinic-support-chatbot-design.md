@@ -90,7 +90,7 @@ Ingestion (background)
 | Styling | Tailwind + shadcn/ui | AI Elements is built on it; consistent by default |
 | Database | Supabase Postgres | Free tier covers this; SQL is easy to explain to clients |
 | Vector search | pgvector (HNSW index) | Same database as everything else — no second service |
-| Embeddings | Voyage AI `voyage-3-large` | Anthropic's recommended embedding partner; ~$0.06/1M tokens |
+| Embeddings | Voyage AI `voyage-4-large` | Anthropic's recommended embedding partner; Voyage's own pick for retrieval and RAG. $0.12/1M tokens against a 200M free allowance — effectively free here. *(Earlier drafts named `voyage-3-large`; it is deprecated.)* |
 | Answers | Claude `claude-opus-5`, effort `low` | Best refusal behaviour, which is the core requirement |
 | Auth (admin only) | Supabase Auth | Comes free with the database |
 | Hosting | Vercel | Free tier, gives the public demo link |
