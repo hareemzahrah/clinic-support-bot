@@ -68,9 +68,10 @@ async function runDry() {
 
   console.log('');
   console.log(`${documents.length} documents, ${totalChunks} chunks, ~${totalTokens} tokens`);
-  console.log(`Embedding cost if run for real: $${cost.toFixed(4)}`);
+  console.log(`ESTIMATE ONLY — would cost ~$${cost.toFixed(4)} to embed. Nothing spent.`);
   console.log('');
-  console.log('Dry run — nothing was embedded or written. Run `npm run seed` to index.');
+  console.log('Dry run: no API calls were made, nothing was embedded, nothing was written.');
+  console.log('Run `npm run seed` when you want to index for real.');
 }
 
 async function runReal() {
