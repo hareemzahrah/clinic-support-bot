@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/**
+ * Palette.
+ *
+ * Deliberately not the default teal-on-white that every AI demo ships with. A practice website
+ * has to feel like somewhere you would take your family, so: warm paper rather than pure white,
+ * ink rather than black, and a deep green that reads calm and established instead of clinical.
+ * The clay accent stops the greens from feeling cold.
+ *
+ * Light only, on purpose. A clinic's site is read in daylight on a phone, and committing to one
+ * well-tuned palette beats two half-tuned ones.
+ */
+@theme {
+  --color-paper: #fbfaf7;
+  --color-paper-warm: #f4f1ea;
+  --color-ink: #16211c;
+  --color-ink-soft: #5a635e;
+  --color-ink-faint: #8a918d;
+
+  --color-forest-50: #f0f5f2;
+  --color-forest-100: #dbe8e0;
+  --color-forest-200: #b8d1c3;
+  --color-forest-600: #2d6a4f;
+  --color-forest-700: #1f4d3a;
+  --color-forest-800: #16382a;
+
+  --color-clay-100: #f6ece4;
+  --color-clay-300: #e0bfa6;
+  --color-clay-600: #a86a43;
+
+  --color-line: #e6e2d9;
+
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Headings carry the character; body text stays out of the way. */
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.02em;
 }
