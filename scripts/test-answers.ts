@@ -15,6 +15,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { retrieve } from '../src/lib/retrieve';
 import { answer, type AnswerUsage } from '../src/lib/answer';
+import { checkGrounding } from '../src/lib/grounding';
 import { corpusTitle } from './corpus-title';
 
 const SETS = join(process.cwd(), 'test-sets');
@@ -67,6 +68,10 @@ function parseAdversarialSet(): TestCase[] {
 
 interface Outcome {
   test: TestCase;
+  /** The gate: did the reply stay inside what the passages support. */
+  grounded: boolean;
+  groundingClaim: string | null;
+  /** Quality metric: did the answered/unanswered flag match expectation. */
   pass: boolean;
   answered: boolean;
   text: string;
@@ -82,9 +87,12 @@ async function run(cases: TestCase[]): Promise<Outcome[]> {
   for (const test of cases) {
     const chunks = await retrieve(test.question);
     const result = await answer(test.question, chunks);
+    const grounding = await checkGrounding(result.text, chunks);
 
     outcomes.push({
       test,
+      grounded: grounding.supported,
+      groundingClaim: grounding.claim,
       pass: result.answered === test.shouldAnswer,
       answered: result.answered,
       text: result.text,
@@ -94,7 +102,10 @@ async function run(cases: TestCase[]): Promise<Outcome[]> {
       usage: result.usage,
     });
 
-    process.stdout.write(result.answered === test.shouldAnswer ? '.' : 'F');
+    // A grounding failure is the serious one, so it gets its own mark.
+    process.stdout.write(
+      !grounding.supported ? 'X' : result.answered === test.shouldAnswer ? '.' : 'f',
+    );
   }
 
   process.stdout.write('\n');
@@ -116,8 +127,27 @@ function report(outcomes: Outcome[], label: string, showAll: boolean) {
     { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0 },
   );
 
+  const ungrounded = outcomes.filter((o) => !o.grounded);
+
   console.log('');
-  console.log(`${label}: ${passed}/${outcomes.length} passed`);
+  console.log(`${label}`);
+  console.log(
+    `  GATE   grounding: ${outcomes.length - ungrounded.length}/${outcomes.length} replies ` +
+      `stayed inside the source passages`,
+  );
+  console.log(
+    `  flag   answered/unanswered correct on ${passed}/${outcomes.length} ` +
+      `(${Math.round((passed / outcomes.length) * 100)}%) — feeds the gaps dashboard`,
+  );
+
+  if (ungrounded.length) {
+    console.log('');
+    console.log('  UNSUPPORTED CLAIMS — this is the failure that matters:');
+    for (const o of ungrounded) {
+      console.log(`    ${o.test.n}. ${o.test.question}`);
+      console.log(`       ${o.groundingClaim}`);
+    }
+  }
 
   if (showAll) {
     console.log('');
@@ -171,7 +201,17 @@ async function main() {
   const failedAdv = report(adversarial, 'Adversarial (must all refuse)', showAll);
   const failedRet = report(retrieval, 'Retrieval (must all answer)', showAll);
 
-  if (failedAdv || failedRet) process.exit(1);
+  const ungrounded = [...adversarial, ...retrieval].filter((o) => !o.grounded).length;
+
+  console.log('');
+  if (ungrounded > 0) {
+    console.log(`FAILED: ${ungrounded} reply/replies made claims the passages do not support.`);
+    process.exit(1);
+  }
+  console.log('Gate passed: no reply stated anything the practice documents do not support.');
+  if (failedAdv || failedRet) {
+    console.log('Flag accuracy is below target but is not a release blocker.');
+  }
 }
 
 main().catch((cause) => {

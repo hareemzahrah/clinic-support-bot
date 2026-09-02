@@ -14,6 +14,8 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { classifyAnswered } from './classify';
+import { isTransient } from './retry';
 import type { RetrievedChunk } from './retrieve';
 
 export const MODEL = 'claude-opus-5';
@@ -41,6 +43,24 @@ Examples of the distinction:
 
 When the extracts do not state the answer, say so plainly and offer to pass the question to the practice. Never fill a gap with what is probably true of dental practices in general, and never soften a guess with hedging language — a hedged invention is still an invention.
 
+## When nothing matched
+
+Sometimes you will be told that no passages matched. That does not always mean the person asked
+something you cannot answer — it usually means they were not asking a question at all.
+
+Greetings, thanks, goodbyes, "are you a real person?", "can you help me?" — these are normal and
+you should answer them naturally, in a sentence or two, then say what you can help with. Never
+answer a greeting by saying you have no information about it, and never offer to pass "hello" to
+the practice. That reads as broken.
+
+If it genuinely was a question and nothing matched, say plainly that you do not have that
+information and offer to pass it on.
+
+Either way, with no passages you have no facts. Do not answer dental questions from general
+knowledge, do not quote a price, an opening time or a policy, and do not guess at what this
+practice offers. You know nothing about Ashfield Dental except what appears in the passages you
+are given.
+
 ## Medical questions
 
 Never diagnose, never say what treatment someone needs, and never interpret symptoms. If someone describes a problem, do not tell them what it is. You may relay what the documents say about when to contact the practice, and direct them to book.
@@ -55,12 +75,18 @@ Do not mention "extracts", "documents", "context" or "the information provided".
 
 Your first line must be one single word — either ${ANSWERED} or ${NO_ANSWER} — with nothing else on that line. Write one of them, never both. The reply itself begins on the next line.
 
-Decide the marker with this test: **if the patient read your reply, would they now have the answer to the question they asked?**
+Decide the marker with this test: **after reading your reply, does the patient know the specific thing they asked about?**
 
-- Yes, they would — ${ANSWERED}. Adding a caveat, a related detail, or a note about something you cannot cover does not change this. They asked, you answered.
-- No, they would still have to ring the practice to find out the thing they asked about — ${NO_ANSWER}.
+- Yes — ${ANSWERED}. Adding a caveat or a related detail alongside the answer does not change this. They asked, you answered.
+- No — ${NO_ANSWER}. They would still have to ring the practice to find out.
+
+Be careful with the second case, because it is easy to get wrong. **Offering related information instead of the answer is still ${NO_ANSWER}.** A helpful reply is not the same as an answered question.
+
+Worked example. Asked which dental school a dentist trained at, with extracts that mention GDC registration but no training history: the right reply says you do not hold that, and may mention the GDC registration. The right marker is ${NO_ANSWER} — the patient still does not know where anyone trained. Marking that ${ANSWERED} because the reply was useful is the mistake to avoid.
 
 Use ${NO_ANSWER} also when the question falls outside what the practice's documents cover, or when answering would require clinical judgement.
+
+Greetings, thanks and other small talk are ${ANSWERED}. They are not questions the documents failed to answer, so flagging them would fill the practice's report with people saying hello.
 
 The marker is not a judgement about whether your reply is useful. A ${NO_ANSWER} reply should still be as helpful as it can be — name the gap, then give any related fact the extracts do state. The marker exists so the practice can see which questions their documents fail to answer, and go and write those pages.
 
@@ -92,6 +118,22 @@ function buildContext(chunks: RetrievedChunk[]): string {
   return chunks
     .map((c, i) => `[${i + 1}] ${c.documentTitle} — ${c.headingPath}\n${c.content}`)
     .join('\n\n---\n\n');
+}
+
+/**
+ * The user turn, including the no-match case.
+ *
+ * Retrieving nothing used to short-circuit to a fixed "I don't have that information" line. It
+ * was free, but it meant someone opening with "hey" was told the practice had no information
+ * about hello — a bad first impression on the most common opening message there is. The model
+ * now sees the no-match case explicitly, and the prompt tells it how to handle both branches:
+ * answer small talk naturally, decline real questions, invent nothing either way.
+ */
+function buildUserMessage(question: string, chunks: RetrievedChunk[]): string {
+  if (chunks.length === 0) {
+    return `No passages from the practice's documents matched this message.\n\n---\n\nVisitor's message: ${question}`;
+  }
+  return `Extracts from the practice's documents:\n\n${buildContext(chunks)}\n\n---\n\nPatient's question: ${question}`;
 }
 
 /**
@@ -151,24 +193,6 @@ export async function answer(
   chunks: RetrievedChunk[],
   history: Array<{ role: 'user' | 'assistant'; content: string }> = [],
 ): Promise<AnswerResult> {
-  // Retrieval found nothing above the threshold, so there is nothing to ground against — skip
-  // the model entirely. Rare by design after the threshold finding, but free when it fires.
-  if (chunks.length === 0) {
-    return {
-      answered: false,
-      text: "I don't have anything on that in our practice information. Would you like me to pass your question to the practice so someone can get back to you?",
-      citedChunkIds: [],
-      raw: '',
-      usage: {
-        inputTokens: 0,
-        outputTokens: 0,
-        cacheReadTokens: 0,
-        cacheWriteTokens: 0,
-        costUsd: 0,
-      },
-    };
-  }
-
   const client = new Anthropic();
 
   const response = await client.messages.create({
@@ -188,7 +212,7 @@ export async function answer(
       ...history,
       {
         role: 'user',
-        content: `Extracts from the practice's documents:\n\n${buildContext(chunks)}\n\n---\n\nPatient's question: ${question}`,
+        content: buildUserMessage(question, chunks),
       },
     ],
   });
@@ -200,12 +224,17 @@ export async function answer(
 
   const parsed = parse(raw, chunks);
 
+  // The marker is a fallback. A dedicated judge, given only the question and the reply, is a
+  // better assessor than the model that wrote it — see classify.ts.
+  const judged = await classifyAnswered(question, parsed.text);
+  const answered = judged ?? parsed.answered;
+
   const u = response.usage;
   const cacheRead = u.cache_read_input_tokens ?? 0;
   const cacheWrite = u.cache_creation_input_tokens ?? 0;
 
   return {
-    answered: parsed.answered,
+    answered,
     text: parsed.text,
     citedChunkIds: parsed.citedChunkIds,
     raw,
@@ -246,25 +275,6 @@ export type AnswerChunk =
  *
  * Text is never un-emitted: each yield is a suffix of what has already been sent.
  */
-/**
- * Whether a failure is worth retrying.
- *
- * `overloaded_error` (529) is the one that actually shows up — the API is momentarily busy and
- * the same request succeeds a second later. Seen live during Phase 3 testing, where it surfaced
- * to the visitor as "something went wrong at our end" for a blip. On a public demo that a client
- * might click once, a transient error and a broken product look identical.
- */
-function isTransient(cause: unknown): boolean {
-  const status = (cause as { status?: number })?.status;
-  const type = (cause as { error?: { error?: { type?: string } } })?.error?.error?.type;
-  return (
-    type === 'overloaded_error' ||
-    status === 429 ||
-    status === 408 ||
-    (typeof status === 'number' && status >= 500)
-  );
-}
-
 const MAX_STREAM_ATTEMPTS = 3;
 
 export async function* answerStream(
@@ -272,13 +282,6 @@ export async function* answerStream(
   chunks: RetrievedChunk[],
   history: Array<{ role: 'user' | 'assistant'; content: string }> = [],
 ): AsyncGenerator<AnswerChunk> {
-  if (chunks.length === 0) {
-    const result = await answer(question, chunks, history);
-    yield { type: 'text', text: result.text };
-    yield { type: 'done', result };
-    return;
-  }
-
   // Retry only while nothing has been shown to the visitor. Once the first words are on screen
   // a retry would replay them, so a mid-stream failure has to surface instead.
   for (let attempt = 1; attempt <= MAX_STREAM_ATTEMPTS; attempt++) {
@@ -320,7 +323,7 @@ async function* streamOnce(
       ...history,
       {
         role: 'user',
-        content: `Extracts from the practice's documents:\n\n${buildContext(chunks)}\n\n---\n\nPatient's question: ${question}`,
+        content: buildUserMessage(question, chunks),
       },
     ],
   });
@@ -347,6 +350,9 @@ async function* streamOnce(
   const final = await stream.finalMessage();
   const parsed = parse(raw, chunks);
 
+  // Runs after the reply has already reached the visitor, so this costs no perceived latency.
+  const judged = await classifyAnswered(question, parsed.text);
+
   if (parsed.text.length > emitted) {
     yield { type: 'text', text: parsed.text.slice(emitted) };
   }
@@ -358,7 +364,7 @@ async function* streamOnce(
   yield {
     type: 'done',
     result: {
-      answered: parsed.answered,
+      answered: judged ?? parsed.answered,
       text: parsed.text,
       citedChunkIds: parsed.citedChunkIds,
       raw,

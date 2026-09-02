@@ -221,9 +221,13 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
               <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent-fg">
                 <Logo className="h-4 w-4" />
               </div>
+              {/* No name in the greeting. Fin can say "Hey Hareem" because it knows who is
+                  logged in; a clinic's website visitor is anonymous, and inventing a name or
+                  leaving a "Hey there," placeholder both read worse than not trying. */}
               <div className="rounded-2xl rounded-tl-md bg-raised px-4 py-3 text-[14px] leading-relaxed text-fg">
-                Hello — I can answer questions about our treatments, fees, opening hours and
-                appointments. What would you like to know?
+                <span aria-hidden="true">👋</span> Hi — you&rsquo;re chatting with Ashfield
+                Dental&rsquo;s assistant. Ask about treatments, fees, opening hours or
+                appointments and I&rsquo;ll answer from the practice&rsquo;s own information.
               </div>
             </div>
 
