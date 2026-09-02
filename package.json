@@ -13,6 +13,8 @@
     "check:db": "tsx scripts/check-db.ts",
     "check:llm": "tsx scripts/check-llm.ts",
     "seed": "tsx scripts/seed.ts",
+    "seed:demo": "tsx scripts/seed-demo-data.ts",
+    "seed:demo:reset": "tsx scripts/seed-demo-data.ts --reset",
     "test:retrieval": "tsx scripts/test-retrieval.ts",
     "tune": "tsx scripts/tune-threshold.ts",
     "test:answers": "tsx scripts/test-answers.ts",
