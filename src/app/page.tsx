@@ -56,7 +56,7 @@ function Icon({ name, className = 'h-6 w-6' }: { name: string; className?: strin
 function Header() {
   return (
     <header className="fixed top-0 z-40 w-full">
-      <div className="mx-auto flex max-w-[1440px] items-center gap-6 rounded-b-[2rem] bg-primary-container px-6 py-3 shadow-lg shadow-secondary-container/20 sm:px-8">
+      <div className="flex w-full items-center gap-6 bg-primary-container px-6 py-3 shadow-lg shadow-secondary-container/20 sm:px-10 lg:px-16">
         <Link href="/" className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-on-primary">
             A
@@ -115,15 +115,15 @@ function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-page/95 via-page/80 to-page/40" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 py-20 sm:px-8">
-        <div className="max-w-2xl">
+      <div className="relative z-10 w-full px-6 py-20 sm:px-10 lg:px-16">
+        <div className="max-w-3xl">
           <p className="font-label text-xs text-primary uppercase">Milbury · Established practice</p>
-          <h1 className="font-display mt-4 text-4xl leading-[1.08] font-bold text-on-surface sm:text-5xl lg:text-[3.5rem]">
+          <h1 className="font-display mt-4 text-4xl leading-[1.05] font-bold text-on-surface sm:text-5xl lg:text-6xl xl:text-7xl">
             Dentistry without
             <br />
             the guesswork.
           </h1>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-on-surface-variant">
+          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-on-surface-variant">
             Straight answers about what treatment costs, what it involves and when we can see
             you. Our full fee guide is on this page — no need to ring and ask.
           </p>
@@ -150,7 +150,7 @@ function Hero() {
 
 function TrustBar() {
   return (
-    <div className="relative z-20 mx-auto -mt-12 mb-8 max-w-[1440px] px-6 sm:px-8">
+    <div className="relative z-20 -mt-12 mb-8 w-full px-6 sm:px-10 lg:px-16">
       <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-outline-variant/30 bg-outline-variant/30 shadow-lg shadow-black/50 sm:grid-cols-2 lg:grid-cols-4">
         {TRUST.map((item) => (
           <div
@@ -170,9 +170,9 @@ function TrustBar() {
 
 function Treatments() {
   return (
-    <section id="treatments" className="mx-auto max-w-[1440px] px-6 py-20 sm:px-8">
+    <section id="treatments" className="w-full px-6 py-20 sm:px-10 lg:px-16">
       <div className="mb-12 text-center">
-        <h2 className="font-display text-3xl font-bold text-on-surface sm:text-4xl">
+        <h2 className="font-display text-3xl font-bold text-on-surface sm:text-4xl lg:text-5xl">
           Dental Services in Milbury
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-lg text-on-surface-variant">
@@ -180,7 +180,7 @@ function Treatments() {
         </p>
       </div>
 
-      <div className="grid auto-rows-[280px] grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid auto-rows-[280px] grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {SERVICES.map((service) => (
           <article
             key={service.name}
@@ -231,9 +231,9 @@ function Fees() {
 
   return (
     <section id="fees" className="border-y border-outline-variant/30 bg-surface-low">
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-20 sm:px-8 lg:grid-cols-[1fr_1.1fr]">
+      <div className="grid w-full gap-12 px-6 py-20 sm:px-10 lg:px-16 lg:grid-cols-[1fr_1.1fr]">
         <div>
-          <h2 className="font-display text-3xl font-bold sm:text-4xl">Our fees, in public</h2>
+          <h2 className="font-display text-3xl font-bold sm:text-4xl lg:text-5xl">Our fees, in public</h2>
           <p className="mt-4 leading-relaxed text-on-surface-variant">
             Most practices make you ring to find out what something costs. We would rather you
             knew before you walked in. You will always get a written treatment plan with exact
@@ -289,8 +289,8 @@ function NhsPrivate() {
   ];
 
   return (
-    <section id="nhs" className="mx-auto max-w-[1440px] px-6 py-20 sm:px-8">
-      <h2 className="font-display text-3xl font-bold sm:text-4xl">NHS &amp; private care</h2>
+    <section id="nhs" className="w-full px-6 py-20 sm:px-10 lg:px-16">
+      <h2 className="font-display text-3xl font-bold sm:text-4xl lg:text-5xl">NHS &amp; private care</h2>
       <div className="mt-8 grid gap-6 md:grid-cols-3">
         {cards.map((card) => (
           <div
@@ -313,7 +313,7 @@ function NhsPrivate() {
 function Visit() {
   return (
     <section id="visit" className="border-t border-outline-variant/30 bg-surface-low">
-      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-20 sm:px-8 lg:grid-cols-2">
+      <div className="grid w-full gap-12 px-6 py-20 sm:px-10 lg:px-16 lg:grid-cols-2">
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-outline-variant/30 shadow-lg shadow-black/50">
           <Image
             src="/img/reception.jpg"
@@ -326,7 +326,7 @@ function Visit() {
         </div>
 
         <div>
-          <h2 className="font-display text-3xl font-bold sm:text-4xl">Visiting us</h2>
+          <h2 className="font-display text-3xl font-bold sm:text-4xl lg:text-5xl">Visiting us</h2>
           <address className="mt-6 text-lg leading-relaxed text-on-surface-variant not-italic">
             14 Ashfield Road
             <br />
@@ -366,7 +366,7 @@ function Visit() {
 function Footer() {
   return (
     <footer className="border-t border-outline-variant/30 bg-surface-lowest pt-14 pb-8">
-      <div className="mx-auto max-w-[1440px] px-6 sm:px-8">
+      <div className="w-full px-6 sm:px-10 lg:px-16">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
             <p className="font-display text-lg font-bold text-primary">
