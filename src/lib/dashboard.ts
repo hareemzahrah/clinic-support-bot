@@ -33,6 +33,13 @@ export interface LeadRow {
   createdAt: string;
 }
 
+export interface DayVolume {
+  date: string;
+  /** Midnight-anchored ISO date, for stable keys. */
+  answered: number;
+  unanswered: number;
+}
+
 export interface DashboardSummary {
   totalQuestions: number;
   unansweredQuestions: number;
@@ -168,4 +175,48 @@ export async function getSummary(): Promise<DashboardSummary> {
     leads: leads ?? 0,
     outOfHoursShare: totalQuestions ? outOfHours / totalQuestions : 0,
   };
+}
+
+
+/**
+ * Question volume per day for the last two weeks, split by whether the documents answered.
+ *
+ * The single most useful thing on the page. A table of gaps says what is missing; this says
+ * whether the problem is growing, and it makes the out-of-hours argument visible — the days
+ * with the tallest unanswered bars are the ones worth acting on first.
+ */
+export async function getDailyVolume(days = 14): Promise<DayVolume[]> {
+  const since = new Date();
+  since.setDate(since.getDate() - (days - 1));
+  since.setHours(0, 0, 0, 0);
+
+  const supabase = getSupabase();
+
+  const { data, error } = await supabase
+    .from('messages')
+    .select('created_at, was_answered')
+    .eq('role', 'assistant')
+    .gte('created_at', since.toISOString());
+
+  if (error) throw new Error(`Could not load volume: ${error.message}`);
+
+  // Seed every day so a quiet day renders as a gap in the chart rather than vanishing and
+  // silently compressing the timeline.
+  const buckets = new Map<string, DayVolume>();
+  for (let i = 0; i < days; i++) {
+    const at = new Date(since);
+    at.setDate(since.getDate() + i);
+    const key = at.toISOString().slice(0, 10);
+    buckets.set(key, { date: key, answered: 0, unanswered: 0 });
+  }
+
+  for (const row of data ?? []) {
+    const key = new Date(row.created_at).toISOString().slice(0, 10);
+    const bucket = buckets.get(key);
+    if (!bucket) continue;
+    if (row.was_answered === false) bucket.unanswered += 1;
+    else bucket.answered += 1;
+  }
+
+  return [...buckets.values()];
 }

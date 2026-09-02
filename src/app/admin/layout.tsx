@@ -5,8 +5,9 @@ import { getUser } from '@/lib/supabase-auth';
 /**
  * Practice dashboard shell.
  *
- * Deliberately plainer than the patient-facing site — this is a working tool someone opens on a
- * Monday morning, not a page meant to persuade anyone. Dense tables, quiet chrome, no hero.
+ * Shares the site's chrome — the same primary-container bar, the same label type — so it reads
+ * as one product rather than an admin panel bolted onto a marketing site. Full bleed, because a
+ * dense table has no business being squeezed into a narrow column on a wide monitor.
  *
  * The session is verified here as well as in proxy.ts. That is not redundancy for its own sake:
  * Next's guidance is that proxy suits optimistic redirects and should not be the only
@@ -28,39 +29,43 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!(await getUser())) redirect('/login');
 
   return (
-    <div className="min-h-screen bg-surface-low">
-      <header className="border-b border-outline-variant/30 bg-surface-mid">
-        <div className="mx-auto flex max-w-5xl items-center gap-6 px-6 py-3.5">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cta text-xs font-semibold text-white">
+    <div className="min-h-screen bg-page">
+      <header className="w-full bg-primary-container shadow-lg shadow-secondary-container/20">
+        <div className="flex w-full items-center gap-4 px-6 py-3 sm:px-10 lg:px-16">
+          <Link href="/" className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-on-primary">
               A
             </span>
-            <span className="text-sm font-semibold">Practice dashboard</span>
-          </div>
+            <span className="font-display text-lg font-bold text-on-surface">Ashfield Dental</span>
+          </Link>
 
-          <nav className="flex items-center gap-1">
+          <span className="font-label hidden rounded-full bg-primary/10 px-3 py-1 text-[11px] text-primary uppercase sm:inline">
+            Practice dashboard
+          </span>
+
+          <nav className="ml-auto flex items-center gap-1">
             {TABS.map((tab) => (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="rounded-lg px-3 py-1.5 text-sm text-on-surface-variant transition hover:bg-surface-high hover:text-on-surface"
+                className="font-label rounded-full px-3 py-2 text-xs text-on-primary-container transition hover:bg-primary/10 hover:text-primary"
               >
                 {tab.label}
               </Link>
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-2">
             <Link
               href="/"
-              className="text-on-surface-variant/60 underline underline-offset-4 transition hover:text-on-surface"
+              className="font-label hidden rounded-full border border-primary/40 px-3 py-2 text-xs text-primary transition hover:bg-primary/10 md:block"
             >
-              View the website
+              View site
             </Link>
             <form action="/api/admin/signout" method="post">
               <button
                 type="submit"
-                className="text-on-surface-variant/60 transition hover:text-on-surface"
+                className="font-label rounded-full px-3 py-2 text-xs text-on-primary-container transition hover:bg-primary/10 hover:text-primary"
               >
                 Sign out
               </button>
@@ -69,7 +74,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+      <main className="w-full px-6 py-10 sm:px-10 lg:px-16">{children}</main>
     </div>
   );
 }
