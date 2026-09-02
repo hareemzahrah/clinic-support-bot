@@ -12,6 +12,8 @@
     "typecheck": "tsc --noEmit",
     "check:db": "tsx scripts/check-db.ts",
     "seed": "tsx scripts/seed.ts",
+    "test:retrieval": "tsx scripts/test-retrieval.ts",
+    "tune": "tsx scripts/tune-threshold.ts",
     "seed:dry": "tsx scripts/seed.ts --dry-run",
     "seed:dry:verbose": "tsx scripts/seed.ts --dry-run --verbose"
   },

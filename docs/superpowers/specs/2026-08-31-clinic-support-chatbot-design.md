@@ -148,11 +148,37 @@ Each of these is a separate module with one job, so it can be tested on its own.
 
 1. Guardrails check the IP rate limit and session message count. Over either limit → friendly refusal, no API call.
 2. Embed the question via Voyage.
-3. Vector search for the top 5 chunks with cosine similarity above **0.35**. *(Starting value — to be tuned against the 50-question test set in Phase 2. Too high and it refuses valid questions; too low and it feeds junk to the model.)*
+3. Vector search for the top 5 chunks with cosine similarity above **0.25**. *(Measured in Phase 2, not guessed — see the finding below.)*
 4. **Zero chunks above threshold → skip the model entirely.** Return the "I don't know, would you like someone to get back to you?" path and set `was_answered = false`. This saves money and removes any chance of hallucination.
 5. Otherwise send the chunks to Claude with a system prompt instructing it to answer only from the provided context and to say so when the context is insufficient.
 6. Stream the answer back with source chips beneath it.
 7. Log the turn, including which chunks were cited.
+
+### Threshold finding (Phase 2, 2026-09-02)
+
+The spec assumed the similarity threshold would do most of the refusal work. Profiling both
+test sets against the real corpus showed it cannot:
+
+| | |
+|---|---|
+| Weakest genuine hit | 0.319 |
+| Strongest gap match | 0.476 |
+| Separation | **-0.156** |
+
+The sets overlap. Any threshold that retrieves all 50 answerable questions also lets all 15
+unanswerable ones pull back plausible content — the sedation question scores 0.476 against the
+nervous-patients paragraph, higher than most genuine questions score against their own source.
+
+Two consequences:
+
+1. **The threshold is set to 0.25** — below the genuine floor with margin, doing nothing more
+   than discarding true nonsense. 50/50 retrieval.
+2. **The grounding prompt carries the refusals.** This is where Phase 2b effort goes. The
+   zero-chunk short-circuit still exists but will rarely fire, so it is a backstop rather than
+   the primary mechanism the spec assumed.
+
+Retrieval itself is not the risk here — it scores 100%. The risk is entirely in whether the
+model declines to use context that looks relevant and is not.
 
 ### Capturing a lead
 
