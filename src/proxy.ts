@@ -46,7 +46,7 @@ export async function proxy(request: NextRequest) {
 
   if (user && request.nextUrl.pathname === '/login') {
     const dashboard = request.nextUrl.clone();
-    dashboard.pathname = '/admin/gaps';
+    dashboard.pathname = '/admin';
     dashboard.search = '';
     return NextResponse.redirect(dashboard);
   }

@@ -5,6 +5,10 @@ import { getUser } from '@/lib/supabase-auth';
 /**
  * Practice dashboard shell.
  *
+ * No navigation, because there is one page. Plausible's whole argument is that a dashboard you
+ * have to navigate is a dashboard you stop opening — everything a practice needs about the week
+ * fits on one screen, so there is nowhere to go.
+ *
  * Shares the site's chrome — the same primary-container bar, the same label type — so it reads
  * as one product rather than an admin panel bolted onto a marketing site. Full bleed, because a
  * dense table has no business being squeezed into a narrow column on a wide monitor.
@@ -19,11 +23,6 @@ export const metadata = {
   title: 'Practice dashboard — Ashfield Dental',
   robots: { index: false, follow: false },
 };
-
-const TABS = [
-  { href: '/admin/gaps', label: 'Gaps' },
-  { href: '/admin/leads', label: 'Leads' },
-];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   if (!(await getUser())) redirect('/login');
@@ -43,19 +42,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             Practice dashboard
           </span>
 
-          <nav className="ml-auto flex items-center gap-1">
-            {TABS.map((tab) => (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className="font-label rounded-full px-3 py-2 text-xs text-on-primary-container transition hover:bg-primary/10 hover:text-primary"
-              >
-                {tab.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             <Link
               href="/"
               className="font-label hidden rounded-full border border-primary/40 px-3 py-2 text-xs text-primary transition hover:bg-primary/10 md:block"

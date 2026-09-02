@@ -41,7 +41,7 @@ function LoginForm() {
     }
 
     // refresh() so the proxy sees the new cookie before the dashboard renders.
-    router.replace(params.get('next') || '/admin/gaps');
+    router.replace(params.get('next') || '/admin');
     router.refresh();
   }
 

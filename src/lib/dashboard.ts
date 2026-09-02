@@ -228,3 +228,36 @@ export async function getDailyVolume(days = 14): Promise<DayVolume[]> {
 
   return [...buckets.values()];
 }
+
+export interface HourBucket {
+  hour: number;
+  count: number;
+  open: boolean;
+}
+
+/**
+ * When questions arrive, by hour of day.
+ *
+ * Turns the out-of-hours headline from a percentage into something you can see: the bars either
+ * side of the shaded opening-hours band are the enquiries that would have reached an answerphone.
+ */
+export async function getHourlyDistribution(): Promise<HourBucket[]> {
+  const { data, error } = await getSupabase()
+    .from('messages')
+    .select('created_at')
+    .eq('role', 'user');
+
+  if (error) throw new Error(`Could not load hourly distribution: ${error.message}`);
+
+  const buckets: HourBucket[] = Array.from({ length: 24 }, (_, hour) => ({
+    hour,
+    count: 0,
+    open: hour >= 8 && hour < 18,
+  }));
+
+  for (const row of data ?? []) {
+    buckets[new Date(row.created_at).getHours()].count += 1;
+  }
+
+  return buckets;
+}
