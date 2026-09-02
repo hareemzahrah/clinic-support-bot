@@ -1,21 +1,22 @@
-# Keeps the Supabase free tier from pausing the demo.
+# Backup keep-alive. The primary is the Vercel cron in vercel.json.
 #
-# Free projects pause after seven consecutive days with no database activity, and a paused
-# project accepts no connections. Without this, a link sent in a proposal is dead by the time
-# someone clicks it the following week.
+# Supabase pauses free projects after seven consecutive days without database activity, and a
+# paused project accepts no connections — a link in a proposal is dead by the time someone
+# clicks it the following week.
 #
-# Runs daily rather than weekly on purpose: a weekly job that fails once puts the project inside
-# the pause window with no second chance.
+# Two independent pingers, because one is not a plan. A GitHub account can be locked over
+# billing (which is exactly what happened here), and a Vercel deployment can be paused; both
+# failing in the same week is unlikely, and either alone is enough.
 #
-# Set KEEP_ALIVE_URL as a repository variable (Settings → Secrets and variables → Actions →
-# Variables) to https://your-deployment.vercel.app/api/health
-name: Keep alive
+# Disabled until KEEP_ALIVE_URL is set, so it does not fail noisily while the Vercel cron is
+# doing the work. To enable: Settings -> Secrets and variables -> Actions -> Variables ->
+# KEEP_ALIVE_URL = https://your-deployment.vercel.app/api/health
+name: Keep alive (backup)
 
 on:
   schedule:
-    # 07:14 UTC. An odd minute rather than the hour, because GitHub's scheduler queues heavily
-    # on the hour and jobs can be delayed or dropped.
-    - cron: '14 7 * * *'
+    # 19:14 UTC — twelve hours offset from the Vercel cron, so a bad day needs both to fail.
+    - cron: '14 19 * * *'
   workflow_dispatch:
 
 jobs:
@@ -25,12 +26,10 @@ jobs:
       - name: Ping the health endpoint
         run: |
           if [ -z "${{ vars.KEEP_ALIVE_URL }}" ]; then
-            echo "KEEP_ALIVE_URL is not set. Add it under Settings → Secrets and variables → Actions → Variables."
-            exit 1
+            echo "KEEP_ALIVE_URL is not set — skipping. The Vercel cron is the primary."
+            exit 0
           fi
 
-          # --fail turns a 4xx/5xx into a non-zero exit, so a broken deployment shows as a failed
-          # workflow rather than a green tick over a dead site.
           response=$(curl --silent --show-error --fail --max-time 30 "${{ vars.KEEP_ALIVE_URL }}")
           echo "$response"
 

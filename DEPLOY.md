@@ -49,8 +49,14 @@ Supabase pauses free projects after **seven consecutive days** with no database 
 paused project accepts no connections, so a link in a proposal is dead by the time a client
 clicks it the following week. That reads as neglect rather than as a free tier expiring.
 
-The workflow in `.github/workflows/keep-alive.yml` pings `/api/health` daily, which runs a real
-database query. Give it the URL:
+**The primary pinger is the Vercel cron** in `vercel.json`. It hits `/api/health` daily, which
+runs a real database query, and needs no configuration — it ships with the deployment.
+
+Confirm it after deploying: **Vercel → your project → Settings → Cron Jobs**. It should list one
+job against `/api/health`.
+
+A second, optional pinger lives in `.github/workflows/keep-alive.yml`, offset twelve hours. It
+stays dormant until you set a repository variable:
 
 **GitHub → Settings → Secrets and variables → Actions → Variables → New repository variable**
 
@@ -59,8 +65,9 @@ Name:  KEEP_ALIVE_URL
 Value: https://your-deployment.vercel.app/api/health
 ```
 
-Then run it once by hand — **Actions → Keep alive → Run workflow** — rather than waiting a day
-to discover it was misconfigured.
+Two independent pingers, because one is not a plan. A GitHub account can be locked over billing
+and a Vercel deployment can be paused; either alone is enough, and both failing in the same week
+is unlikely.
 
 ## 4. Point the embed script at production
 
