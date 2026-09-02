@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "check:db": "tsx scripts/check-db.ts",
     "check:llm": "tsx scripts/check-llm.ts",
+    "create:demo-user": "tsx scripts/create-demo-user.ts",
     "seed": "tsx scripts/seed.ts",
     "seed:demo": "tsx scripts/seed-demo-data.ts",
     "seed:demo:reset": "tsx scripts/seed-demo-data.ts --reset",
@@ -24,13 +25,15 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.123.0",
+    "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
     "cheerio": "^1.2.0",
     "mammoth": "^1.12.2",
     "next": "16.3.3",
     "pdf-parse": "^2.4.5",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
