@@ -71,7 +71,7 @@ function DemoBanner() {
         </span>
         <Link
           href="/how-it-works"
-          className="font-medium text-clay-300 underline underline-offset-4 transition hover:text-paper"
+          className="font-medium text-navy-200 underline underline-offset-4 transition hover:text-paper"
         >
           See how the assistant was built
         </Link>
@@ -85,7 +85,7 @@ function Header() {
     <header className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-4">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-forest-700 text-sm font-semibold text-paper">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy-700 text-sm font-semibold text-paper">
             A
           </span>
           <span className="font-display text-lg font-semibold">Ashfield Dental</span>
@@ -101,13 +101,13 @@ function Header() {
         <div className="ml-auto flex items-center gap-4 md:ml-0">
           <a
             href="tel:01632960148"
-            className="hidden text-sm font-medium text-ink transition hover:text-forest-700 sm:block"
+            className="hidden text-sm font-medium text-ink transition hover:text-navy-700 sm:block"
           >
             01632 960148
           </a>
           <a
             href="#visit"
-            className="rounded-full bg-forest-700 px-4 py-2 text-sm font-medium text-paper transition hover:bg-forest-800"
+            className="rounded-full bg-navy-700 px-4 py-2 text-sm font-medium text-paper transition hover:bg-navy-800"
           >
             Book an appointment
           </a>
@@ -119,10 +119,10 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="border-b border-line bg-paper-warm">
+    <section className="border-b border-line bg-paper-tint">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_1fr] lg:py-28">
         <div>
-          <p className="text-sm font-medium tracking-wide text-forest-600 uppercase">
+          <p className="text-sm font-medium tracking-wide text-navy-600 uppercase">
             Milbury · Established practice
           </p>
           <h1 className="font-display mt-4 text-[2.75rem] leading-[1.05] font-semibold sm:text-6xl">
@@ -138,7 +138,7 @@ function Hero() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a
               href="#visit"
-              className="rounded-full bg-forest-700 px-6 py-3 text-sm font-medium text-paper transition hover:bg-forest-800"
+              className="rounded-full bg-navy-700 px-6 py-3 text-sm font-medium text-paper transition hover:bg-navy-800"
             >
               Book an appointment
             </a>
@@ -169,7 +169,7 @@ function Hero() {
               </div>
             ))}
           </dl>
-          <p className="mt-5 rounded-xl bg-clay-100 px-4 py-3 text-[13px] leading-relaxed text-ink-soft">
+          <p className="mt-5 rounded-xl bg-navy-50 px-4 py-3 text-[13px] leading-relaxed text-ink-soft">
             Reception is unstaffed between 1pm and 2pm on weekdays. Appointments carry on as
             normal during that hour.
           </p>
@@ -195,7 +195,7 @@ function Treatments() {
             <article key={treatment.name} className="bg-paper p-6">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="font-display text-lg font-semibold">{treatment.name}</h3>
-                <span className="shrink-0 text-sm font-medium text-forest-600">
+                <span className="shrink-0 text-sm font-medium text-navy-600">
                   {treatment.price}
                 </span>
               </div>
@@ -225,7 +225,7 @@ function Fees() {
   ];
 
   return (
-    <section id="fees" className="border-b border-line bg-paper-warm">
+    <section id="fees" className="border-b border-line bg-paper-tint">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1fr_1.1fr]">
         <div>
           <h2 className="font-display text-3xl font-semibold sm:text-4xl">Our fees, in public</h2>
@@ -256,7 +256,7 @@ function Fees() {
               ))}
             </tbody>
           </table>
-          <p className="border-t border-line bg-paper-warm px-5 py-3 text-[13px] text-ink-faint">
+          <p className="border-t border-line bg-paper-tint px-5 py-3 text-[13px] text-ink-faint">
             Private fees, effective 1 January 2026. NHS charges are set nationally.
           </p>
         </div>
@@ -272,7 +272,7 @@ function NhsPrivate() {
         <h2 className="font-display text-3xl font-semibold sm:text-4xl">NHS &amp; private care</h2>
 
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-clay-300 bg-clay-100 p-6">
+          <div className="rounded-2xl border border-navy-200 bg-navy-50 p-6">
             <p className="font-display text-lg font-semibold">Our NHS list is full</p>
             <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">
               We are not taking new adult NHS patients at present. We keep an expression-of-
@@ -302,7 +302,7 @@ function NhsPrivate() {
 
 function Visit() {
   return (
-    <section id="visit" className="border-b border-line bg-forest-800 text-paper">
+    <section id="visit" className="border-b border-line bg-navy-800 text-paper">
       <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-2">
         <div>
           <h2 className="font-display text-3xl font-semibold sm:text-4xl">Visiting us</h2>
@@ -316,7 +316,7 @@ function Visit() {
           <p className="mt-6">
             <a
               href="tel:01632960148"
-              className="font-display text-2xl font-semibold underline underline-offset-8 transition hover:text-clay-300"
+              className="font-display text-2xl font-semibold underline underline-offset-8 transition hover:text-navy-200"
             >
               01632 960148
             </a>

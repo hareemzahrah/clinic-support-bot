@@ -25,9 +25,9 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
 
   if (state === 'sent') {
     return (
-      <div className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-900">
+      <div className="rounded-xl border border-navy-200 bg-navy-50 px-4 py-3 text-sm text-ink">
         <p className="font-medium">Thanks — we have your details.</p>
-        <p className="mt-1 text-teal-800">
+        <p className="mt-1 text-ink-soft">
           Someone from the practice will get back to you. For anything urgent, please ring 01632
           960148.
         </p>
@@ -62,10 +62,10 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+      className="rounded-xl border border-line bg-surface px-4 py-3 shadow-sm"
     >
-      <p className="text-sm font-medium text-slate-900">Shall we get back to you?</p>
-      <p className="mt-0.5 text-xs text-slate-500">
+      <p className="text-sm font-medium text-fg">Shall we get back to you?</p>
+      <p className="mt-0.5 text-xs text-fg-faint">
         Leave your details and the practice will follow this up.
       </p>
 
@@ -78,7 +78,7 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
           maxLength={100}
           autoComplete="name"
           disabled={state === 'sending'}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 disabled:bg-slate-50"
+          className="w-full rounded-lg border border-line px-3 py-2 text-sm text-fg placeholder:text-fg-faint focus:border-navy-200 focus:outline-none focus:ring-2 focus:ring-navy-100 disabled:bg-raised"
         />
         <input
           type="text"
@@ -88,7 +88,7 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
           maxLength={200}
           autoComplete="email"
           disabled={state === 'sending'}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 disabled:bg-slate-50"
+          className="w-full rounded-lg border border-line px-3 py-2 text-sm text-fg placeholder:text-fg-faint focus:border-navy-200 focus:outline-none focus:ring-2 focus:ring-navy-100 disabled:bg-raised"
         />
       </div>
 
@@ -98,14 +98,14 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
         <button
           type="submit"
           disabled={state === 'sending'}
-          className="rounded-lg bg-teal-700 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-500/40 disabled:opacity-60"
+          className="rounded-lg bg-navy-700 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-200 disabled:opacity-60"
         >
           {state === 'sending' ? 'Sending…' : 'Send'}
         </button>
         <button
           type="button"
           onClick={onDismiss}
-          className="rounded-lg px-3 py-1.5 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+          className="rounded-lg px-3 py-1.5 text-sm text-fg-faint transition hover:bg-raised hover:text-fg-soft"
         >
           No thanks
         </button>

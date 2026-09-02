@@ -17,7 +17,7 @@ export const metadata = {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-2xl border border-line bg-paper px-5 py-4">
-      <p className="font-display text-3xl font-semibold text-forest-700">{value}</p>
+      <p className="font-display text-3xl font-semibold text-navy-700">{value}</p>
       <p className="mt-1 text-sm text-ink-soft">{label}</p>
     </div>
   );
@@ -34,7 +34,7 @@ export default function HowItWorks() {
           ← Back to the practice site
         </Link>
 
-        <p className="mt-10 text-sm font-medium tracking-wide text-forest-600 uppercase">
+        <p className="mt-10 text-sm font-medium tracking-wide text-navy-600 uppercase">
           Portfolio demo
         </p>
         <h1 className="font-display mt-3 text-4xl leading-tight font-semibold sm:text-5xl">
@@ -116,7 +116,7 @@ export default function HowItWorks() {
           </dl>
         </section>
 
-        <section className="mt-14 rounded-2xl border border-line bg-paper-warm p-6">
+        <section className="mt-14 rounded-2xl border border-line bg-paper-tint p-6">
           <h2 className="font-display text-xl font-semibold">Built with</h2>
           <p className="mt-3 leading-relaxed text-ink-soft">
             Next.js and TypeScript, Postgres with pgvector for retrieval, Voyage AI embeddings,
