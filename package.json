@@ -15,6 +15,8 @@
     "seed": "tsx scripts/seed.ts",
     "test:retrieval": "tsx scripts/test-retrieval.ts",
     "tune": "tsx scripts/tune-threshold.ts",
+    "test:answers": "tsx scripts/test-answers.ts",
+    "test:adversarial": "tsx scripts/test-answers.ts --adversarial",
     "seed:dry": "tsx scripts/seed.ts --dry-run",
     "seed:dry:verbose": "tsx scripts/seed.ts --dry-run --verbose"
   },
