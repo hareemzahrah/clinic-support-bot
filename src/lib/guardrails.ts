@@ -17,8 +17,14 @@
 import { createHash } from 'node:crypto';
 import { getSupabase } from './supabase';
 
-/** Messages per IP per day. Generous for a real visitor, useless for a script. */
-export const DAILY_IP_LIMIT = 20;
+/**
+ * Messages per IP per day. Generous for a real visitor, useless for a script.
+ *
+ * Configurable because development trips it constantly — every manual test and every suite run
+ * comes from the same address, and 20 goes quickly. Raise it in .env.local while building;
+ * leave it unset in production, where 20 is the point.
+ */
+export const DAILY_IP_LIMIT = Number(process.env.DAILY_IP_LIMIT ?? 20);
 
 /** Messages per conversation before the widget offers a fresh start. */
 export const SESSION_MESSAGE_LIMIT = 15;
