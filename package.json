@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "check:db": "tsx scripts/check-db.ts",
+    "check:llm": "tsx scripts/check-llm.ts",
     "seed": "tsx scripts/seed.ts",
     "test:retrieval": "tsx scripts/test-retrieval.ts",
     "tune": "tsx scripts/tune-threshold.ts",
@@ -18,6 +19,7 @@
     "seed:dry:verbose": "tsx scripts/seed.ts --dry-run --verbose"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.123.0",
     "@supabase/supabase-js": "^2.112.4",
     "cheerio": "^1.2.0",
     "mammoth": "^1.12.2",
