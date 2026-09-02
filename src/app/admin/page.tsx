@@ -76,7 +76,7 @@ function BarRow({
       <span
         aria-hidden="true"
         className={`absolute inset-y-1 left-1 rounded ${
-          tone === 'accent' ? 'bg-cta/20' : 'bg-primary/10'
+          tone === 'accent' ? 'bg-cta/20' : 'bg-on-surface-variant/15'
         }`}
         style={{ width: `calc(${(value / max) * 100}% - 0.5rem)` }}
       />
@@ -126,12 +126,14 @@ function VolumeChart({ days }: { days: DayVolume[] }) {
     <section className="rounded-xl border border-outline-variant/30 bg-surface-mid p-5">
       <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="font-display text-[15px] font-semibold">Questions per day</h2>
-        <div className="flex items-center gap-4 text-[12px] text-on-surface-variant">
-          <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-primary/35" /> Answered
+        <div className="flex items-center gap-5 text-[12px]">
+          <span className="flex items-center gap-2 text-on-surface-variant">
+            <span className="h-3 w-4 rounded-sm bg-cta" />
+            Couldn&rsquo;t answer
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-cta" /> Couldn&rsquo;t answer
+          <span className="flex items-center gap-2 text-on-surface-variant/70">
+            <span className="h-3 w-4 rounded-sm bg-on-surface-variant/30" />
+            Answered
           </span>
         </div>
       </div>
@@ -152,7 +154,7 @@ function VolumeChart({ days }: { days: DayVolume[] }) {
                 style={{ height: `${(day.unanswered / max) * 100}%` }}
               />
               <div
-                className="w-full bg-primary/35 transition-opacity group-hover:opacity-80"
+                className="w-full bg-on-surface-variant/30 transition-opacity group-hover:opacity-80"
                 style={{ height: `${(day.answered / max) * 100}%` }}
               />
             </div>
@@ -164,6 +166,7 @@ function VolumeChart({ days }: { days: DayVolume[] }) {
         <span>
           {new Date(days[0]?.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
         </span>
+        <span>busiest day: {max} questions</span>
         <span>Today</span>
       </div>
     </section>
@@ -177,9 +180,16 @@ function HourChart({ hours }: { hours: HourBucket[] }) {
     <section className="rounded-xl border border-outline-variant/30 bg-surface-mid p-5">
       <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="font-display text-[15px] font-semibold">When people ask</h2>
-        <span className="font-label text-[11px] text-on-surface-variant/60 uppercase">
-          Shaded = we&rsquo;re open
-        </span>
+        <div className="flex items-center gap-5 text-[12px]">
+          <span className="flex items-center gap-2 text-on-surface-variant">
+            <span className="h-3 w-4 rounded-sm bg-cta" />
+            We&rsquo;re closed
+          </span>
+          <span className="flex items-center gap-2 text-on-surface-variant/70">
+            <span className="h-3 w-4 rounded-sm bg-on-surface-variant/30" />
+            Open
+          </span>
+        </div>
       </div>
 
       {/* h-full on the column is load-bearing: a percentage height resolves against the
@@ -191,7 +201,7 @@ function HourChart({ hours }: { hours: HourBucket[] }) {
             <div
               title={`${String(h.hour).padStart(2, '0')}:00 — ${h.count} question${h.count === 1 ? '' : 's'}`}
               className={`w-full rounded-t-sm transition-opacity hover:opacity-80 ${
-                h.open ? 'bg-primary/35' : 'bg-cta'
+                h.open ? 'bg-on-surface-variant/30' : 'bg-cta'
               }`}
               style={{ height: `${Math.max((h.count / max) * 100, 1.5)}%` }}
             />
