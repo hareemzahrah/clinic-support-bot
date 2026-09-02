@@ -4,7 +4,9 @@ A customer-support chatbot for dental practices that answers patient questions f
 practice's own documents — and, when the answer isn't in them, says so and takes the patient's
 details instead of inventing something.
 
-**[Live demo](#)** · **[How it works](#)** · Demo dashboard login: `demo@ashfielddental.example` / `ashfield-demo-2026`
+**[Live demo](https://clinic-support-bot.vercel.app)** · **[How it works](https://clinic-support-bot.vercel.app/how-it-works)** · **[Practice dashboard](https://clinic-support-bot.vercel.app/login)** (`demo@ashfielddental.example` / `ashfield-demo-2026`)
+
+Open the chat and ask *"how much is a check-up?"* — then ask *"do you offer sedation for nervous patients?"*, which the practice's documents do not answer.
 
 | | |
 |---|---|
