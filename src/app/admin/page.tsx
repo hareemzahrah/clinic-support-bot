@@ -95,23 +95,15 @@ function VolumeChart({ days }: { days: DayVolume[] }) {
   };
 
   const line = totals.map(point).join(' ');
-  const unansweredLine = days.map((d, i) => point(d.unanswered, i)).join(' ');
   const area = `0,100 ${line} 100,100`;
 
   return (
     <section className="rounded-xl border border-outline-variant/30 bg-surface-mid p-5">
       <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
         <h2 className="font-display text-[15px] font-semibold">Questions per day</h2>
-        <div className="flex items-center gap-5 text-[12px]">
-          <span className="flex items-center gap-2 text-on-surface-variant">
-            <span className="h-0.5 w-4 rounded-full bg-primary" />
-            All questions
-          </span>
-          <span className="flex items-center gap-2 text-on-surface-variant">
-            <span className="h-0.5 w-4 rounded-full bg-cta" />
-            Couldn&rsquo;t answer
-          </span>
-        </div>
+        <span className="font-label text-[11px] text-on-surface-variant/60 uppercase">
+          Questions asked
+        </span>
       </div>
 
       <div className="flex gap-3">
@@ -152,16 +144,7 @@ function VolumeChart({ days }: { days: DayVolume[] }) {
             <polyline
               points={line}
               fill="none"
-              stroke="#cbc1eb"
-              strokeWidth="2"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              vectorEffect="non-scaling-stroke"
-            />
-            <polyline
-              points={unansweredLine}
-              fill="none"
-              stroke="#8b5cf6"
+              stroke="#8b7ff5"
               strokeWidth="2"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -209,7 +192,7 @@ function BarRow({
     <li className="relative flex items-center gap-3 px-3 py-[7px] text-sm">
       <span
         aria-hidden="true"
-        className="absolute inset-y-[3px] left-2 rounded bg-cta/25"
+        className="absolute inset-y-[3px] left-2 rounded-sm bg-primary/12"
         style={{ width: `calc(${(value / max) * 100}% - 1rem)` }}
       />
       <span className="relative min-w-0 flex-1 truncate pl-1 text-on-surface">{label}</span>
