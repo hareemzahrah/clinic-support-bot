@@ -52,14 +52,14 @@ function Sources({ citations }: { citations: Citation[] }) {
     <div className="mt-2">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="group inline-flex items-center gap-1.5 text-[12px] text-fg-faint transition hover:text-fg-soft"
+        className="group inline-flex items-center gap-1.5 text-[12px] text-on-surface-variant/60 transition hover:text-on-surface-variant"
       >
         <span className="flex gap-1">
           {citations.map((citation, i) => (
             <span
               key={`${citation.heading}-${i}`}
               title={citation.heading}
-              className="flex h-[18px] min-w-[18px] items-center justify-center rounded-[5px] bg-raised-2 px-1 text-[11px] font-medium text-fg-soft"
+              className="flex h-[18px] min-w-[18px] items-center justify-center rounded-[5px] bg-surface-highest px-1 text-[11px] font-medium text-on-surface-variant"
             >
               {i + 1}
             </span>
@@ -69,11 +69,11 @@ function Sources({ citations }: { citations: Citation[] }) {
       </button>
 
       {open && (
-        <ul className="mt-2 space-y-1 border-l border-hairline pl-3">
+        <ul className="mt-2 space-y-1 border-l border-outline-variant/40 pl-3">
           {citations.map((citation, i) => (
             <li key={`${citation.heading}-detail-${i}`} className="text-[12px] leading-snug">
-              <span className="text-fg-faint">{i + 1}. </span>
-              <span className="text-fg-soft">{citation.heading}</span>
+              <span className="text-on-surface-variant/60">{i + 1}. </span>
+              <span className="text-on-surface-variant">{citation.heading}</span>
             </li>
           ))}
         </ul>
@@ -176,17 +176,17 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
     <div
       className={
         embedded
-          ? 'flex h-full w-full flex-col bg-surface'
-          : 'animate-rise flex h-[min(680px,calc(100vh-7rem))] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-[0_20px_50px_-12px_rgba(15,30,51,0.22)]'
+          ? 'flex h-full w-full flex-col bg-surface-mid'
+          : 'animate-rise flex h-[min(680px,calc(100vh-7rem))] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-mid shadow-[0_24px_60px_-12px_rgba(0,0,0,0.75)]'
       }
     >
-      <header className="flex items-center gap-3 border-b border-hairline-soft px-4 py-3.5">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent-fg">
+      <header className="flex items-center gap-3 border-b border-outline-variant/30 px-4 py-3.5">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-container text-primary">
           <Logo />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[14px] font-semibold text-fg">{PRACTICE_NAME}</p>
-          <p className="truncate text-[12px] text-fg-faint">
+          <p className="truncate text-[14px] font-semibold text-on-surface">{PRACTICE_NAME}</p>
+          <p className="truncate text-[12px] text-on-surface-variant/60">
             <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 align-middle" />
             Answers instantly
           </p>
@@ -196,7 +196,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
           <button
             onClick={startOver}
             title="Start a new conversation"
-            className="rounded-lg px-2 py-1 text-[12px] text-fg-faint transition hover:bg-raised hover:text-fg-soft"
+            className="rounded-lg px-2 py-1 text-[12px] text-on-surface-variant/60 transition hover:bg-surface-high hover:text-on-surface"
           >
             New chat
           </button>
@@ -205,7 +205,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
           <button
             onClick={() => setIsOpen(false)}
             aria-label="Close chat"
-            className="rounded-lg p-1.5 text-fg-faint transition hover:bg-raised hover:text-fg"
+            className="rounded-lg p-1.5 text-on-surface-variant/60 transition hover:bg-surface-high hover:text-on-surface"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
               <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -218,13 +218,13 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
         {messages.length === 0 && (
           <div className="space-y-5">
             <div className="flex gap-2.5">
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent-fg">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-container text-primary">
                 <Logo className="h-4 w-4" />
               </div>
               {/* No name in the greeting. Fin can say "Hey Hareem" because it knows who is
                   logged in; a clinic's website visitor is anonymous, and inventing a name or
                   leaving a "Hey there," placeholder both read worse than not trying. */}
-              <div className="rounded-2xl rounded-tl-md bg-raised px-4 py-3 text-[14px] leading-relaxed text-fg">
+              <div className="rounded-2xl rounded-tl-md bg-surface-high px-4 py-3 text-[14px] leading-relaxed text-on-surface">
                 <span aria-hidden="true">👋</span> Hi — you&rsquo;re chatting with Ashfield
                 Dental&rsquo;s assistant. Ask about treatments, fees, opening hours or
                 appointments and I&rsquo;ll answer from the practice&rsquo;s own information.
@@ -236,7 +236,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
                 <button
                   key={suggestion}
                   onClick={() => ask(suggestion)}
-                  className="block w-full rounded-xl border border-hairline bg-raised/40 px-3.5 py-2.5 text-left text-[13px] text-fg-soft transition hover:border-navy-200 hover:bg-raised hover:text-fg"
+                  className="block w-full rounded-xl border border-outline-variant/40 bg-surface-high/40 px-3.5 py-2.5 text-left text-[13px] text-on-surface-variant transition hover:border-cta/50 hover:bg-surface-high hover:text-on-surface"
                 >
                   {suggestion}
                 </button>
@@ -249,7 +249,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
           if (message.role === 'user') {
             return (
               <div key={message.id} className="flex justify-end">
-                <div className="max-w-[85%] rounded-2xl rounded-br-md bg-navy-700 px-4 py-2.5 text-[14px] leading-relaxed text-white">
+                <div className="max-w-[85%] rounded-2xl rounded-br-md bg-cta px-4 py-2.5 text-[14px] leading-relaxed text-white">
                   {message.content}
                 </div>
               </div>
@@ -260,7 +260,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
 
           return (
             <div key={message.id} className="flex gap-2.5">
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent-fg">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-container text-primary">
                 <Logo className="h-4 w-4" />
               </div>
 
@@ -268,7 +268,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
                 <div
                   className={`inline-block max-w-full rounded-2xl rounded-tl-md px-4 py-3 text-[14px] leading-relaxed whitespace-pre-wrap ${
                     message.isError
-                      ? 'bg-danger-soft text-danger'
+                      ? 'bg-danger-container/40 text-danger'
                       : 'bg-raised text-fg'
                   }`}
                 >
@@ -292,7 +292,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
                 )}
 
                 {message.done && !message.isError && (
-                  <p className="mt-1.5 text-[11px] text-fg-faint">
+                  <p className="mt-1.5 text-[11px] text-on-surface-variant/60">
                     {PRACTICE_NAME} · AI assistant
                   </p>
                 )}
@@ -316,13 +316,13 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
         })}
       </div>
 
-      <div className="border-t border-hairline-soft p-3">
+      <div className="border-t border-outline-variant/30 p-3">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             ask(input);
           }}
-          className="flex items-end gap-2 rounded-2xl border border-hairline bg-raised px-3 py-2 transition focus-within:border-navy-200"
+          className="flex items-end gap-2 rounded-2xl border border-outline-variant/40 bg-surface-high px-3 py-2 transition focus-within:border-cta/50"
         >
           <textarea
             ref={inputRef}
@@ -339,13 +339,13 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
             maxLength={500}
             placeholder="Message…"
             disabled={isStreaming}
-            className="max-h-[120px] flex-1 resize-none bg-transparent py-1 text-[14px] leading-relaxed text-fg placeholder:text-fg-faint focus:outline-none disabled:opacity-50"
+            className="max-h-[120px] flex-1 resize-none bg-transparent py-1 text-[14px] leading-relaxed text-fg placeholder:text-on-surface-variant/60 focus:outline-none disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={isStreaming || !input.trim()}
             aria-label="Send message"
-            className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy-700 text-white transition hover:bg-navy-600 disabled:bg-raised-2 disabled:text-fg-faint"
+            className="mb-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cta text-white transition hover:bg-cta-hover disabled:bg-surface-highest disabled:text-on-surface-variant/60"
           >
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
               <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -353,7 +353,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
           </button>
         </form>
 
-        <p className="mt-2 text-center text-[11px] text-fg-faint">
+        <p className="mt-2 text-center text-[11px] text-on-surface-variant/60">
           Demo — {PRACTICE_NAME} is fictional. Urgent? Ring {PRACTICE_PHONE}.
         </p>
       </div>
@@ -369,7 +369,7 @@ export function ChatWidget({ embedded = false }: { embedded?: boolean }) {
         onClick={() => setIsOpen((open) => !open)}
         aria-label={isOpen ? 'Close chat' : 'Open chat'}
         aria-expanded={isOpen}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-navy-700 text-white shadow-[0_10px_28px_-6px_rgba(19,49,92,0.45)] transition hover:scale-105 hover:bg-navy-600 focus:outline-none focus:ring-4 focus:ring-navy-200"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-cta text-white shadow-[0_8px_30px_rgba(139,92,246,0.45)] transition hover:scale-105 hover:bg-cta-hover focus:ring-4 focus:ring-cta/30 focus:outline-none"
       >
         {isOpen ? (
           <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">

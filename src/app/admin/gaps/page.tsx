@@ -22,10 +22,10 @@ function relative(iso: string): string {
 
 function Stat({ value, label, hint }: { value: string; label: string; hint?: string }) {
   return (
-    <div className="rounded-xl border border-line bg-paper px-4 py-3.5">
+    <div className="rounded-xl border border-outline-variant/30 bg-surface-mid px-4 py-3.5">
       <p className="font-display text-2xl font-semibold">{value}</p>
-      <p className="mt-0.5 text-[13px] text-ink-soft">{label}</p>
-      {hint && <p className="mt-1 text-[12px] text-ink-faint">{hint}</p>}
+      <p className="mt-0.5 text-[13px] text-on-surface-variant">{label}</p>
+      {hint && <p className="mt-1 text-[12px] text-on-surface-variant/60">{hint}</p>}
     </div>
   );
 }
@@ -37,7 +37,7 @@ export default async function GapsPage() {
   return (
     <div>
       <h1 className="font-display text-2xl font-semibold">Questions we couldn&rsquo;t answer</h1>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-soft">
+      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-on-surface-variant">
         Patients asked these and our website didn&rsquo;t have the answer. The ones at the top
         are costing the most phone calls — add them to the practice information and the
         assistant will answer them from then on.
@@ -58,14 +58,14 @@ export default async function GapsPage() {
       </div>
 
       {gaps.length === 0 ? (
-        <p className="mt-10 rounded-xl border border-line bg-paper px-5 py-8 text-center text-sm text-ink-soft">
+        <p className="mt-10 rounded-xl border border-outline-variant/30 bg-surface-mid px-5 py-8 text-center text-sm text-on-surface-variant">
           Nothing here — every question so far was answered from the practice information.
         </p>
       ) : (
-        <div className="mt-8 overflow-hidden rounded-xl border border-line bg-paper">
+        <div className="mt-8 overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-mid">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-line text-left text-[12px] tracking-wide text-ink-faint uppercase">
+              <tr className="border-b border-outline-variant/30 text-left text-[12px] tracking-wide text-on-surface-variant/60 uppercase">
                 <th className="px-5 py-3 font-medium">Question</th>
                 <th className="px-3 py-3 text-right font-medium">Asked</th>
                 <th className="px-3 py-3 text-right font-medium">Out of hours</th>
@@ -75,26 +75,26 @@ export default async function GapsPage() {
             </thead>
             <tbody>
               {gaps.map((gap) => (
-                <tr key={gap.question} className="border-b border-line-soft last:border-0">
+                <tr key={gap.question} className="border-b border-outline-variant/20 last:border-0">
                   <td className="px-5 py-3.5">{gap.question}</td>
                   <td className="px-3 py-3.5 text-right">
                     <span
                       className={
                         gap.askCount >= 4
-                          ? 'rounded-md bg-navy-700 px-2 py-0.5 text-[12px] font-medium text-paper'
-                          : 'text-ink-soft'
+                          ? 'rounded-md bg-cta px-2 py-0.5 text-[12px] font-medium text-white'
+                          : 'text-on-surface-variant'
                       }
                     >
                       {gap.askCount}
                     </span>
                   </td>
-                  <td className="px-3 py-3.5 text-right text-ink-soft">
+                  <td className="px-3 py-3.5 text-right text-on-surface-variant">
                     {gap.outOfHoursCount || '—'}
                   </td>
-                  <td className="px-3 py-3.5 text-right text-ink-soft">
+                  <td className="px-3 py-3.5 text-right text-on-surface-variant">
                     {gap.leadsCaptured || '—'}
                   </td>
-                  <td className="px-5 py-3.5 text-right whitespace-nowrap text-ink-faint">
+                  <td className="px-5 py-3.5 text-right whitespace-nowrap text-on-surface-variant/60">
                     {relative(gap.lastAskedAt)}
                   </td>
                 </tr>
@@ -104,7 +104,7 @@ export default async function GapsPage() {
         </div>
       )}
 
-      <p className="mt-4 text-[13px] text-ink-faint">
+      <p className="mt-4 text-[13px] text-on-surface-variant/60">
         {totalUnanswered} unanswered {totalUnanswered === 1 ? 'question' : 'questions'} across{' '}
         {gaps.length} {gaps.length === 1 ? 'topic' : 'topics'}. Similar wordings are listed
         separately.

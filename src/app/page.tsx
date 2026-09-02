@@ -1,115 +1,98 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 
 /**
- * The Ashfield Dental Practice website.
+ * Ashfield Dental Practice — built from the Stitch export.
  *
- * This is the demo's whole point: a client evaluating the work should see the assistant sitting
- * on a real practice site, not on a page explaining the project. The engineering write-up lives
- * at /how-it-works for anyone who wants it.
+ * Structure and styling follow the design; the content follows the indexed corpus, and so do
+ * its omissions. No clinician names, no sedation, no implants placed in house. Those are gaps
+ * the assistant is deliberately tested on refusing, and a page contradicting them would make
+ * the demo incoherent — so a few of the Stitch placeholders (50,000 patients, 14 specialists,
+ * a Lahore address) are replaced with facts the documents actually support.
  *
- * Every fact here matches the indexed corpus, and the omissions match it too. No clinician
- * names, no sedation, no implants placed in house — those are deliberate gaps the assistant is
- * tested on refusing, and a website that contradicted them would make the demo incoherent.
+ * Images are served from /public rather than the Google CDN links Stitch emitted. Those are
+ * temporary URLs; a portfolio demo has to still work in six months.
  */
 
-const TREATMENTS = [
-  {
-    name: 'Examinations & hygiene',
-    detail:
-      'A full check of teeth, gums, bite and soft tissues, including oral cancer screening. Hygienist appointments to match.',
-    price: 'From £54',
-  },
-  {
-    name: 'White fillings',
-    detail:
-      'Tooth-coloured composite as standard. We no longer place new amalgam, though we will repair or replace existing fillings.',
-    price: 'From £135',
-  },
-  {
-    name: 'Crowns & bridges',
-    detail:
-      'Porcelain, porcelain bonded to metal, or gold. Made by our laboratory over two appointments about a fortnight apart.',
-    price: 'From £720',
-  },
-  {
-    name: 'Root canal treatment',
-    detail:
-      'Front teeth and premolars treated here. Complex molars go to a specialist endodontist we work with.',
-    price: 'From £420',
-  },
-  {
-    name: 'Clear aligners',
-    detail:
-      'For adults and older teenagers with mild to moderate crowding or spacing. Typically six to eighteen months.',
-    price: 'From £2,400',
-  },
-  {
-    name: 'Home whitening',
-    detail:
-      'Custom trays and professional gel, worn overnight or a few hours daily across two to three weeks.',
-    price: '£340',
-  },
+const TRUST = [
+  { icon: 'clock', label: 'Evening and Saturday appointments' },
+  { icon: 'shield', label: 'Strict sterilisation and cross-infection protocols' },
+  { icon: 'tag', label: 'Full fee guide published — no need to ring and ask' },
+  { icon: 'bolt', label: 'Emergency slots kept free every weekday' },
+];
+
+const SERVICES = [
+  { name: 'Dental Check-up', blurb: 'Comprehensive oral examination', image: '/img/checkup.jpg', price: 'From £54' },
+  { name: 'Dental Emergency', blurb: 'Seen the same day', image: '/img/emergency.jpg', price: '£85' },
+  { name: 'Teeth Whitening', blurb: 'Custom trays, professional gel', image: '/img/whitening.jpg', price: '£340' },
+  { name: 'Clear Aligners', blurb: 'Six to eighteen months', image: '/img/aligners.jpg', price: 'From £2,400' },
+  { name: 'Crowns & Bridges', blurb: 'Porcelain, bonded or gold', image: '/img/crown.jpg', price: 'From £720' },
+  { name: 'Root Canal Treatment', blurb: 'Save your natural tooth', image: '/img/rootcanal.jpg', price: 'From £420' },
 ];
 
 const HOURS = [
-  ['Monday', '8:30am – 5:30pm'],
-  ['Tuesday', '8:30am – 5:30pm'],
-  ['Wednesday', '8:30am – 7:30pm'],
-  ['Thursday', '8:30am – 5:30pm'],
+  ['Monday – Thursday', '8:30am – 5:30pm'],
+  ['Wednesday late', 'until 7:30pm'],
   ['Friday', '8:30am – 4:00pm'],
   ['Saturday', '9:00am – 1:00pm, 1st & 3rd'],
   ['Sunday', 'Closed'],
 ];
 
-function DemoBanner() {
+function Icon({ name, className = 'h-6 w-6' }: { name: string; className?: string }) {
+  const paths: Record<string, string> = {
+    clock: 'M12 7v5l3 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+    shield: 'M12 3 4.5 6v5.5c0 4.3 3.1 8.3 7.5 9.5 4.4-1.2 7.5-5.2 7.5-9.5V6L12 3Z',
+    tag: 'M3 12V5a2 2 0 0 1 2-2h7l9 9-9 9-9-9Z M7.5 7.5h.01',
+    bolt: 'M13 2 4 14h7l-1 8 9-12h-7l1-8Z',
+  };
   return (
-    <div className="bg-ink text-paper">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-6 py-2 text-center text-[13px]">
-        <span className="text-paper/70">
-          Portfolio demo — Ashfield Dental is a fictional practice.
-        </span>
-        <Link
-          href="/how-it-works"
-          className="font-medium text-navy-200 underline underline-offset-4 transition hover:text-paper"
-        >
-          See how the assistant was built
-        </Link>
-      </div>
-    </div>
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path d={paths[name]} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
 function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center gap-6 px-6 py-4">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy-700 text-sm font-semibold text-paper">
+    <header className="fixed top-0 z-40 w-full">
+      <div className="mx-auto flex max-w-[1440px] items-center gap-6 rounded-b-[2rem] bg-primary-container px-6 py-3 shadow-lg shadow-secondary-container/20 sm:px-8">
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-on-primary">
             A
           </span>
-          <span className="font-display text-lg font-semibold">Ashfield Dental</span>
-        </div>
+          <span className="font-display text-lg font-bold text-on-surface">Ashfield Dental</span>
+        </Link>
 
-        <nav className="ml-auto hidden items-center gap-7 text-sm text-ink-soft md:flex">
-          <a href="#treatments" className="transition hover:text-ink">Treatments</a>
-          <a href="#fees" className="transition hover:text-ink">Fees</a>
-          <a href="#nhs" className="transition hover:text-ink">NHS &amp; private</a>
-          <a href="#visit" className="transition hover:text-ink">Visiting us</a>
+        <nav className="ml-auto hidden items-center gap-1 lg:flex">
+          {[
+            ['Treatments', '#treatments'],
+            ['Fees', '#fees'],
+            ['NHS & private', '#nhs'],
+            ['Visiting us', '#visit'],
+          ].map(([label, href]) => (
+            <a
+              key={href}
+              href={href}
+              className="font-label rounded-full px-3 py-2 text-xs text-on-primary-container transition hover:bg-primary/10 hover:text-primary"
+            >
+              {label}
+            </a>
+          ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-4 md:ml-0">
+        <div className="ml-auto flex items-center gap-2 lg:ml-0">
           <a
             href="tel:01632960148"
-            className="hidden text-sm font-medium text-ink transition hover:text-navy-700 sm:block"
+            className="font-label hidden rounded-full border border-primary px-4 py-2 text-xs text-primary transition hover:bg-primary/10 sm:block"
           >
             01632 960148
           </a>
           <a
             href="#visit"
-            className="rounded-full bg-navy-700 px-4 py-2 text-sm font-medium text-paper transition hover:bg-navy-800"
+            className="font-label glow-cta rounded-full bg-cta px-4 py-2 text-xs text-white transition hover:bg-cta-hover"
           >
-            Book an appointment
+            Book Appointment
           </a>
         </div>
       </div>
@@ -119,96 +102,118 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="border-b border-line bg-paper-tint">
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1.15fr_1fr] lg:py-28">
-        <div>
-          <p className="text-sm font-medium tracking-wide text-navy-600 uppercase">
-            Milbury · Established practice
-          </p>
-          <h1 className="font-display mt-4 text-[2.75rem] leading-[1.05] font-semibold sm:text-6xl">
+    <section className="relative flex min-h-[600px] items-center pt-24">
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/img/hero.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-page/95 via-page/80 to-page/40" />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 py-20 sm:px-8">
+        <div className="max-w-2xl">
+          <p className="font-label text-xs text-primary uppercase">Milbury · Established practice</p>
+          <h1 className="font-display mt-4 text-4xl leading-[1.08] font-bold text-on-surface sm:text-5xl lg:text-[3.5rem]">
             Dentistry without
             <br />
             the guesswork.
           </h1>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-ink-soft">
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-on-surface-variant">
             Straight answers about what treatment costs, what it involves and when we can see
             you. Our full fee guide is on this page — no need to ring and ask.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#visit"
-              className="rounded-full bg-navy-700 px-6 py-3 text-sm font-medium text-paper transition hover:bg-navy-800"
+              className="font-label glow-cta rounded-lg bg-cta px-8 py-3 text-xs text-white transition hover:bg-cta-hover"
             >
-              Book an appointment
+              Book Appointment
             </a>
             <a
               href="#fees"
-              className="rounded-full border border-ink/15 px-6 py-3 text-sm font-medium text-ink transition hover:border-ink/40"
+              className="font-label rounded-lg border border-outline-variant bg-surface-high px-8 py-3 text-xs text-on-surface transition hover:bg-surface-variant"
             >
-              See our fees
+              See Our Fees
             </a>
           </div>
-
-          <p className="mt-8 text-sm text-ink-faint">
-            Emergency slots kept free every weekday. Ring{' '}
-            <a href="tel:01632960148" className="text-ink underline underline-offset-4">
-              01632 960148
-            </a>{' '}
-            early in the day.
-          </p>
-        </div>
-
-        <div className="rounded-3xl border border-line bg-paper p-7 shadow-[0_2px_24px_rgba(22,33,28,0.05)]">
-          <h2 className="font-display text-xl font-semibold">Opening hours</h2>
-          <dl className="mt-5 space-y-2.5 text-sm">
-            {HOURS.map(([day, time]) => (
-              <div key={day} className="flex justify-between gap-4 border-b border-line/70 pb-2.5 last:border-0">
-                <dt className="text-ink-soft">{day}</dt>
-                <dd className={time === 'Closed' ? 'text-ink-faint' : 'font-medium'}>{time}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="mt-5 rounded-xl bg-navy-50 px-4 py-3 text-[13px] leading-relaxed text-ink-soft">
-            Reception is unstaffed between 1pm and 2pm on weekdays. Appointments carry on as
-            normal during that hour.
-          </p>
         </div>
       </div>
     </section>
   );
 }
 
+function TrustBar() {
+  return (
+    <div className="relative z-20 mx-auto -mt-12 mb-8 max-w-[1440px] px-6 sm:px-8">
+      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-outline-variant/30 bg-outline-variant/30 shadow-lg shadow-black/50 sm:grid-cols-2 lg:grid-cols-4">
+        {TRUST.map((item) => (
+          <div
+            key={item.label}
+            className="group relative flex items-center gap-3 bg-surface-high p-4 transition-colors hover:bg-surface-variant"
+          >
+            <span className="text-primary">
+              <Icon name={item.icon} className="h-7 w-7" />
+            </span>
+            <p className="font-label text-xs leading-relaxed text-on-surface">{item.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Treatments() {
   return (
-    <section id="treatments" className="border-b border-line">
-      <div className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="font-display text-3xl font-semibold sm:text-4xl">What we do</h2>
-        <p className="mt-3 max-w-2xl text-ink-soft">
-          General, preventive, restorative and cosmetic dentistry for adults and children. Where
-          something is better handled by a specialist, we refer and look after your routine care
-          ourselves.
-        </p>
-
-        <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-          {TREATMENTS.map((treatment) => (
-            <article key={treatment.name} className="bg-paper p-6">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="font-display text-lg font-semibold">{treatment.name}</h3>
-                <span className="shrink-0 text-sm font-medium text-navy-600">
-                  {treatment.price}
-                </span>
-              </div>
-              <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">{treatment.detail}</p>
-            </article>
-          ))}
-        </div>
-
-        <p className="mt-6 text-sm text-ink-faint">
-          We do not place implants, fit fixed metal braces, offer in-chair power whitening or
-          work under general anaesthetic. Surgical extractions go to an oral surgeon.
+    <section id="treatments" className="mx-auto max-w-[1440px] px-6 py-20 sm:px-8">
+      <div className="mb-12 text-center">
+        <h2 className="font-display text-3xl font-bold text-on-surface sm:text-4xl">
+          Dental Services in Milbury
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-lg text-on-surface-variant">
+          General, preventive, restorative and cosmetic dentistry for adults and children.
         </p>
       </div>
+
+      <div className="grid auto-rows-[280px] grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {SERVICES.map((service) => (
+          <article
+            key={service.name}
+            className="group relative overflow-hidden rounded-xl border border-outline-variant/30 bg-black shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-colors hover:border-cta/50"
+          >
+            <Image
+              src={service.image}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 z-10 bg-gradient-to-t from-primary-container to-transparent opacity-80" />
+
+            <div className="absolute bottom-0 left-0 z-20 w-full border-t border-primary/20 bg-primary-container/90 p-4 backdrop-blur-sm">
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="font-display text-lg font-semibold text-on-surface">
+                  {service.name}
+                </h3>
+                <span className="font-label shrink-0 text-xs text-primary">{service.price}</span>
+              </div>
+              <p className="font-label mt-1 text-xs text-on-primary-container opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                {service.blurb}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <p className="mt-8 text-center text-sm text-on-surface-variant/70">
+        We do not place implants, fit fixed metal braces, offer in-chair power whitening or work
+        under general anaesthetic. Surgical extractions go to an oral surgeon.
+      </p>
     </section>
   );
 }
@@ -225,19 +230,18 @@ function Fees() {
   ];
 
   return (
-    <section id="fees" className="border-b border-line bg-paper-tint">
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[1fr_1.1fr]">
+    <section id="fees" className="border-y border-outline-variant/30 bg-surface-low">
+      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-20 sm:px-8 lg:grid-cols-[1fr_1.1fr]">
         <div>
-          <h2 className="font-display text-3xl font-semibold sm:text-4xl">Our fees, in public</h2>
-          <p className="mt-4 leading-relaxed text-ink-soft">
+          <h2 className="font-display text-3xl font-bold sm:text-4xl">Our fees, in public</h2>
+          <p className="mt-4 leading-relaxed text-on-surface-variant">
             Most practices make you ring to find out what something costs. We would rather you
             knew before you walked in. You will always get a written treatment plan with exact
-            costs before any work begins, and we never proceed with treatment you have not
-            agreed to.
+            costs before any work begins.
           </p>
-          <div className="mt-6 rounded-2xl border border-line bg-paper p-5">
+          <div className="mt-6 rounded-xl border border-outline-variant/30 bg-surface-mid p-5">
             <p className="font-display text-lg font-semibold">Spreading the cost</p>
-            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+            <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">
               Interest-free finance over ten months on treatment above £750, subject to a credit
               check. Our monthly care plan starts at £18.50 and includes examinations, hygiene
               visits and a discount on everything else.
@@ -245,18 +249,18 @@ function Fees() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-line bg-paper">
+        <div className="overflow-hidden rounded-xl border border-outline-variant/30 bg-surface-mid">
           <table className="w-full text-sm">
             <tbody>
               {rows.map(([item, price]) => (
-                <tr key={item} className="border-b border-line last:border-0">
-                  <td className="px-5 py-3.5 text-ink-soft">{item}</td>
-                  <td className="px-5 py-3.5 text-right font-medium">{price}</td>
+                <tr key={item} className="border-b border-outline-variant/20 last:border-0">
+                  <td className="px-5 py-3.5 text-on-surface-variant">{item}</td>
+                  <td className="px-5 py-3.5 text-right font-semibold text-primary">{price}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="border-t border-line bg-paper-tint px-5 py-3 text-[13px] text-ink-faint">
+          <p className="font-label border-t border-outline-variant/30 bg-surface-low px-5 py-3 text-[11px] text-on-surface-variant/60">
             Private fees, effective 1 January 2026. NHS charges are set nationally.
           </p>
         </div>
@@ -266,35 +270,41 @@ function Fees() {
 }
 
 function NhsPrivate() {
-  return (
-    <section id="nhs" className="border-b border-line">
-      <div className="mx-auto max-w-6xl px-6 py-20">
-        <h2 className="font-display text-3xl font-semibold sm:text-4xl">NHS &amp; private care</h2>
+  const cards = [
+    {
+      title: 'Our NHS list is full',
+      body: 'We are not taking new adult NHS patients at present. We keep an expression-of-interest list and contact people when capacity comes up. Children under 18 of registered adults can be added.',
+      highlight: true,
+    },
+    {
+      title: 'NHS charges',
+      body: 'Band 1 £27.90, Band 2 £76.60, Band 3 £332.10. One charge per course of treatment, not per item — three fillings is a single Band 2 charge.',
+      highlight: false,
+    },
+    {
+      title: 'Free treatment',
+      body: 'Under 18s, under 19s in full-time education, pregnant patients and those who have had a baby in the last year, and people on qualifying benefits.',
+      highlight: false,
+    },
+  ];
 
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-navy-200 bg-navy-50 p-6">
-            <p className="font-display text-lg font-semibold">Our NHS list is full</p>
-            <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">
-              We are not taking new adult NHS patients at present. We keep an expression-of-
-              interest list and contact people when capacity comes up. Children under 18 of
-              registered adults can be added.
-            </p>
+  return (
+    <section id="nhs" className="mx-auto max-w-[1440px] px-6 py-20 sm:px-8">
+      <h2 className="font-display text-3xl font-bold sm:text-4xl">NHS &amp; private care</h2>
+      <div className="mt-8 grid gap-6 md:grid-cols-3">
+        {cards.map((card) => (
+          <div
+            key={card.title}
+            className={`rounded-xl border p-6 ${
+              card.highlight
+                ? 'border-cta/40 bg-primary-container/40'
+                : 'border-outline-variant/30 bg-surface-low'
+            }`}
+          >
+            <p className="font-display text-lg font-semibold text-on-surface">{card.title}</p>
+            <p className="mt-2.5 text-sm leading-relaxed text-on-surface-variant">{card.body}</p>
           </div>
-          <div className="rounded-2xl border border-line p-6">
-            <p className="font-display text-lg font-semibold">NHS charges</p>
-            <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">
-              Band 1 £27.90, Band 2 £76.60, Band 3 £332.10. One charge per course of treatment,
-              not per item — three fillings is a single Band 2 charge.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-line p-6">
-            <p className="font-display text-lg font-semibold">Free treatment</p>
-            <p className="mt-2.5 text-sm leading-relaxed text-ink-soft">
-              Under 18s, under 19s in full-time education, pregnant patients and those who have
-              had a baby in the last year, and people on qualifying benefits.
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );
@@ -302,81 +312,126 @@ function NhsPrivate() {
 
 function Visit() {
   return (
-    <section id="visit" className="border-b border-line bg-navy-800 text-paper">
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-2">
-        <div>
-          <h2 className="font-display text-3xl font-semibold sm:text-4xl">Visiting us</h2>
-          <address className="mt-6 text-lg not-italic leading-relaxed text-paper/85">
-            14 Ashfield Road
-            <br />
-            Milbury
-            <br />
-            MB3 7QT
-          </address>
-          <p className="mt-6">
-            <a
-              href="tel:01632960148"
-              className="font-display text-2xl font-semibold underline underline-offset-8 transition hover:text-navy-200"
-            >
-              01632 960148
-            </a>
-          </p>
-          <p className="mt-3 text-sm text-paper/60">
-            reception@ashfielddental.example — checked once each working day
-          </p>
+    <section id="visit" className="border-t border-outline-variant/30 bg-surface-low">
+      <div className="mx-auto grid max-w-[1440px] gap-12 px-6 py-20 sm:px-8 lg:grid-cols-2">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-outline-variant/30 shadow-lg shadow-black/50">
+          <Image
+            src="/img/reception.jpg"
+            alt="Ashfield Dental reception"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-page via-transparent to-transparent opacity-80" />
         </div>
 
-        <div className="space-y-5 text-sm leading-relaxed text-paper/80">
-          <div>
-            <p className="font-medium text-paper">Parking</p>
-            <p className="mt-1">
-              Six patient spaces at the rear, via the lane beside the pharmacy. Free two-hour
-              on-street parking on Ashfield Road, and a pay-and-display car park on Market
-              Street four minutes away.
-            </p>
-          </div>
-          <div>
-            <p className="font-medium text-paper">By bus or train</p>
-            <p className="mt-1">
-              The 14 and 22 stop directly outside; the 7 stops on Market Street. Milbury station
-              is fifteen minutes on foot.
-            </p>
-          </div>
-          <div>
-            <p className="font-medium text-paper">Access</p>
-            <p className="mt-1">
-              Single storey with step-free access from the rear car park. All three surgeries,
-              the waiting room and the accessible toilet are on the ground floor.
-            </p>
-          </div>
+        <div>
+          <h2 className="font-display text-3xl font-bold sm:text-4xl">Visiting us</h2>
+          <address className="mt-6 text-lg leading-relaxed text-on-surface-variant not-italic">
+            14 Ashfield Road
+            <br />
+            Milbury, MB3 7QT
+          </address>
+          <a
+            href="tel:01632960148"
+            className="font-display mt-4 inline-block text-2xl font-bold text-primary underline underline-offset-8 transition hover:text-secondary"
+          >
+            01632 960148
+          </a>
+
+          <dl className="mt-8 space-y-2 text-sm">
+            {HOURS.map(([day, time]) => (
+              <div
+                key={day}
+                className="flex justify-between gap-4 border-b border-outline-variant/20 pb-2 last:border-0"
+              >
+                <dt className="text-on-surface-variant">{day}</dt>
+                <dd className={time === 'Closed' ? 'text-on-surface-variant/50' : 'font-medium'}>
+                  {time}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className="mt-6 rounded-lg border border-outline-variant/30 bg-surface-mid px-4 py-3 text-sm text-on-surface-variant">
+            Six patient parking spaces at the rear. Step-free access from the car park, and all
+            surgeries are on the ground floor.
+          </p>
         </div>
       </div>
     </section>
   );
 }
 
+function Footer() {
+  return (
+    <footer className="border-t border-outline-variant/30 bg-surface-lowest pt-14 pb-8">
+      <div className="mx-auto max-w-[1440px] px-6 sm:px-8">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div>
+            <p className="font-display text-lg font-bold text-primary">
+              Ashfield Dental Practice
+            </p>
+            <p className="mt-3 max-w-sm text-sm leading-relaxed text-on-surface-variant">
+              Specialist dental care in Milbury. NHS and private treatment, with our full fee
+              guide published so you know the cost before you arrive.
+            </p>
+          </div>
+
+          <div>
+            <p className="font-label mb-3 text-xs text-primary uppercase">Treatments</p>
+            <ul className="space-y-2 text-sm text-on-surface-variant">
+              {['Examinations & hygiene', 'White fillings', 'Crowns & bridges', 'Clear aligners', 'Teeth whitening'].map(
+                (item) => (
+                  <li key={item}>{item}</li>
+                ),
+              )}
+            </ul>
+          </div>
+
+          <div>
+            <p className="font-label mb-3 text-xs text-primary uppercase">Get in touch</p>
+            <ul className="space-y-2 text-sm text-on-surface-variant">
+              <li>14 Ashfield Road, Milbury, MB3 7QT</li>
+              <li>
+                <a href="tel:01632960148" className="transition hover:text-primary">
+                  01632 960148
+                </a>
+              </li>
+              <li>reception@ashfielddental.example</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-outline-variant/30 pt-6 text-center sm:flex-row sm:text-left">
+          <p className="text-sm text-on-surface-variant/60">
+            Ashfield Dental Practice is fictional — a portfolio demonstration.
+          </p>
+          <Link
+            href="/how-it-works"
+            className="font-label text-xs text-primary underline underline-offset-4 transition hover:text-secondary"
+          >
+            How the assistant works
+          </Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 export default function Home() {
   return (
     <>
-      <DemoBanner />
       <Header />
       <main className="flex-1">
         <Hero />
+        <TrustBar />
         <Treatments />
         <Fees />
         <NhsPrivate />
         <Visit />
       </main>
-
-      <footer className="mx-auto w-full max-w-6xl px-6 py-10 text-sm text-ink-faint">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <p>Ashfield Dental Practice — a fictional practice, built as a portfolio demo.</p>
-          <Link href="/how-it-works" className="underline underline-offset-4 hover:text-ink">
-            How the assistant works
-          </Link>
-        </div>
-      </footer>
-
+      <Footer />
       <ChatWidget />
     </>
   );

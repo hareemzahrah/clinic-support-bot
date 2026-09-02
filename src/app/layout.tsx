@@ -1,31 +1,37 @@
 import type { Metadata } from 'next';
-import { Fraunces, Inter } from 'next/font/google';
+import { Inter, JetBrains_Mono, Manrope } from 'next/font/google';
 import './globals.css';
 
 /**
- * A serif for headings and a neutral sans for everything else.
+ * The three faces from the Stitch export: Manrope for display and headings, Inter for body,
+ * JetBrains Mono for the small uppercase labels on buttons and eyebrows.
  *
- * Fraunces gives the practice some warmth and age — a dental surgery is a place you trust, not
- * a startup — while Inter keeps prices, opening hours and policy text plainly legible, which is
- * what people actually come to a clinic website for.
+ * Loaded through next/font so they are self-hosted and preloaded — the exported HTML pulled
+ * them from Google's CDN on every page view, which is a render-blocking round trip and a
+ * third-party request the demo does not need.
  */
-// `axes` is only accepted when the weight is left variable, so the optical-size and softness
-// axes are traded away for explicit weights. Two fixed weights is what the design actually uses.
-const display = Fraunces({
-  variable: '--font-display',
+const manrope = Manrope({
+  variable: '--font-manrope',
   subsets: ['latin'],
-  weight: ['400', '600'],
+  weight: ['600', '700', '800'],
 });
 
-const body = Inter({
-  variable: '--font-body',
+const inter = Inter({
+  variable: '--font-inter',
   subsets: ['latin'],
+  weight: ['400', '500', '600'],
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: '--font-jetbrains',
+  subsets: ['latin'],
+  weight: ['500'],
 });
 
 export const metadata: Metadata = {
   title: 'Ashfield Dental Practice — Milbury',
   description:
-    'NHS and private dentistry in Milbury. Examinations, hygiene, white fillings, crowns, clear aligners and emergency appointments.',
+    'Specialist dental care in Milbury. Examinations, hygiene, white fillings, crowns, clear aligners and emergency appointments.',
 };
 
 // Typed explicitly rather than with Next's generated `LayoutProps` global, so `npm run
@@ -34,9 +40,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en-GB"
-      className={`${display.variable} ${body.variable} h-full antialiased`}
+      className={`${manrope.variable} ${inter.variable} ${jetbrains.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-paper text-ink">{children}</body>
+      <body className="flex min-h-full flex-col bg-page text-on-surface">{children}</body>
     </html>
   );
 }

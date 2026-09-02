@@ -25,9 +25,9 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
 
   if (state === 'sent') {
     return (
-      <div className="rounded-xl border border-navy-200 bg-navy-50 px-4 py-3 text-sm text-ink">
+      <div className="rounded-xl border border-cta/40 bg-primary-container/40 px-4 py-3 text-sm text-on-surface">
         <p className="font-medium">Thanks — we have your details.</p>
-        <p className="mt-1 text-ink-soft">
+        <p className="mt-1 text-on-surface-variant">
           Someone from the practice will get back to you. For anything urgent, please ring 01632
           960148.
         </p>
@@ -62,10 +62,10 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border border-line bg-surface px-4 py-3 shadow-sm"
+      className="rounded-xl border border-outline-variant/40 bg-surface-high px-4 py-3 shadow-sm"
     >
-      <p className="text-sm font-medium text-fg">Shall we get back to you?</p>
-      <p className="mt-0.5 text-xs text-fg-faint">
+      <p className="text-sm font-medium text-on-surface">Shall we get back to you?</p>
+      <p className="mt-0.5 text-xs text-on-surface-variant/60">
         Leave your details and the practice will follow this up.
       </p>
 
@@ -78,7 +78,7 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
           maxLength={100}
           autoComplete="name"
           disabled={state === 'sending'}
-          className="w-full rounded-lg border border-line px-3 py-2 text-sm text-fg placeholder:text-fg-faint focus:border-navy-200 focus:outline-none focus:ring-2 focus:ring-navy-100 disabled:bg-raised"
+          className="w-full rounded-lg border border-outline-variant/40 px-3 py-2 text-sm text-fg placeholder:text-on-surface-variant/60 focus:border-cta/60 focus:ring-2 focus:ring-cta/20 focus:outline-none disabled:bg-surface-highest"
         />
         <input
           type="text"
@@ -88,24 +88,24 @@ export function LeadForm({ conversationId, reason, onDismiss }: LeadFormProps) {
           maxLength={200}
           autoComplete="email"
           disabled={state === 'sending'}
-          className="w-full rounded-lg border border-line px-3 py-2 text-sm text-fg placeholder:text-fg-faint focus:border-navy-200 focus:outline-none focus:ring-2 focus:ring-navy-100 disabled:bg-raised"
+          className="w-full rounded-lg border border-outline-variant/40 px-3 py-2 text-sm text-fg placeholder:text-on-surface-variant/60 focus:border-cta/60 focus:ring-2 focus:ring-cta/20 focus:outline-none disabled:bg-surface-highest"
         />
       </div>
 
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-2 text-xs text-danger">{error}</p>}
 
       <div className="mt-3 flex items-center gap-2">
         <button
           type="submit"
           disabled={state === 'sending'}
-          className="rounded-lg bg-navy-700 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-navy-600 focus:outline-none focus:ring-2 focus:ring-navy-200 disabled:opacity-60"
+          className="rounded-lg bg-cta px-3 py-1.5 text-sm font-medium text-white transition hover:bg-cta-hover focus:ring-2 focus:ring-cta/30 focus:outline-none disabled:opacity-60"
         >
           {state === 'sending' ? 'Sending…' : 'Send'}
         </button>
         <button
           type="button"
           onClick={onDismiss}
-          className="rounded-lg px-3 py-1.5 text-sm text-fg-faint transition hover:bg-raised hover:text-fg-soft"
+          className="rounded-lg px-3 py-1.5 text-sm text-on-surface-variant/60 transition hover:bg-surface-highest hover:text-on-surface"
         >
           No thanks
         </button>

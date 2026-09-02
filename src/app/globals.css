@@ -1,83 +1,102 @@
 @import "tailwindcss";
 
 /**
- * Navy and white.
+ * Obsidian Dental — the palette exported from Stitch, taken verbatim.
  *
- * Structure borrowed from the way Fin is put together — layered planes, small steps between
- * them, hairline borders rather than heavy shadows — but inverted to light, which suits a
- * dental practice far better than a dark developer-tool palette.
+ * Material-style role names (surface / on-surface / primary-container) rather than the shade
+ * scales Tailwind usually ships. Kept as exported so the design and the code stay in step: a
+ * renamed token is a token that quietly drifts from the source of truth.
  *
- * One accent, used sparingly. Navy carries the brand; everything else is white, tint and ink.
- * Resisting a second accent colour is most of what keeps a medical site looking clean.
+ * Two colours are not from that export and are marked where they appear: the violet call to
+ * action Stitch hard-coded as #8B5CF6, and a red for form errors, which the palette has no
+ * usable value for on a dark ground.
  */
 @theme {
-  /* Page planes, lightest first. */
-  --color-paper: #ffffff;
-  --color-paper-tint: #f5f8fc;
+  --color-surface: #101418;
+  --color-surface-dim: #101418;
+  --color-surface-bright: #36393f;
+  --color-surface-lowest: #0b0e13;
+  --color-surface-low: #191c21;
+  --color-surface-mid: #1d2025;
+  --color-surface-high: #272a2f;
+  --color-surface-highest: #32353a;
+  --color-surface-variant: #32353a;
 
-  --color-ink: #0f1e33;
-  --color-ink-soft: #55647a;
-  --color-ink-faint: #8b98a9;
+  --color-on-surface: #e1e2e9;
+  --color-on-surface-variant: #cac5ce;
 
-  --color-line: #e3e9f0;
-  --color-line-soft: #eef2f7;
+  --color-outline: #938f98;
+  --color-outline-variant: #48454d;
 
-  --color-navy-50: #eef3fa;
-  --color-navy-100: #dce6f4;
-  --color-navy-200: #b9cce8;
-  --color-navy-600: #1e4f8f;
-  --color-navy-700: #13315c;
-  --color-navy-800: #0d2444;
+  --color-primary: #cbc1eb;
+  --color-on-primary: #322c4d;
+  --color-primary-container: #383153;
+  --color-on-primary-container: #a399c2;
 
-  /* Widget surfaces. Named separately from the page so the chat panel can be re-skinned
-     without disturbing the site around it. */
-  --color-surface: #ffffff;
-  --color-raised: #f1f5f9;
-  --color-raised-2: #e2e9f2;
-  --color-hairline: #e3e9f0;
-  --color-hairline-soft: #eef2f7;
+  --color-secondary: #d0bcff;
+  --color-on-secondary: #3c0091;
+  --color-secondary-container: #571bc1;
+  --color-on-secondary-container: #c4abff;
+  --color-secondary-fixed: #e9ddff;
 
-  --color-fg: #0f1e33;
-  --color-fg-soft: #55647a;
-  --color-fg-faint: #8b98a9;
+  --color-tertiary: #c8c6c7;
 
-  --color-accent: #13315c;
-  --color-accent-hover: #1e4f8f;
-  --color-accent-soft: #eef3fa;
-  --color-accent-fg: #13315c;
+  /* The page sits a touch above surface, as the Stitch export's body rule does. */
+  --color-page: #181b20;
 
-  --color-danger: #b42318;
-  --color-danger-soft: #fef3f2;
+  /* Not in the export: Stitch hard-codes this violet on every call to action. */
+  --color-cta: #8b5cf6;
+  --color-cta-hover: #7c4def;
 
-  --font-sans: var(--font-body);
-  --font-display: var(--font-display);
+  /* Not in the export: it has no error colour that reads on this ground. */
+  --color-danger: #ffb4ab;
+  --color-danger-container: #93000a;
+
+  --font-display: var(--font-manrope);
+  --font-sans: var(--font-inter);
+  --font-label: var(--font-jetbrains);
 }
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  background: var(--color-page);
+  color: var(--color-on-surface);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 .font-display {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-manrope), Georgia, serif;
   letter-spacing: -0.02em;
 }
 
-/* Keeps the chat panel's scrollbar from breaking its rounded edge. */
+/* Uppercase mono, used for eyebrows and button labels throughout the design. */
+.font-label {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* The violet glow Stitch puts under every primary action. */
+.glow-cta {
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+}
+.glow-cta-lg {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.45);
+}
+
 .thin-scroll {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-raised-2) transparent;
+  scrollbar-color: var(--color-outline-variant) transparent;
 }
 .thin-scroll::-webkit-scrollbar {
   width: 8px;
 }
 .thin-scroll::-webkit-scrollbar-thumb {
-  background: var(--color-raised-2);
+  background: var(--color-outline-variant);
   border-radius: 9999px;
 }
 .thin-scroll::-webkit-scrollbar-track {
@@ -94,7 +113,6 @@ body {
     transform: translateY(0) scale(1);
   }
 }
-
 .animate-rise {
   animation: rise 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }

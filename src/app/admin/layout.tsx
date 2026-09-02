@@ -28,11 +28,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!(await getUser())) redirect('/login');
 
   return (
-    <div className="min-h-screen bg-paper-tint">
-      <header className="border-b border-line bg-paper">
+    <div className="min-h-screen bg-surface-low">
+      <header className="border-b border-outline-variant/30 bg-surface-mid">
         <div className="mx-auto flex max-w-5xl items-center gap-6 px-6 py-3.5">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-navy-700 text-xs font-semibold text-paper">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cta text-xs font-semibold text-white">
               A
             </span>
             <span className="text-sm font-semibold">Practice dashboard</span>
@@ -43,7 +43,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Link
                 key={tab.href}
                 href={tab.href}
-                className="rounded-lg px-3 py-1.5 text-sm text-ink-soft transition hover:bg-navy-50 hover:text-ink"
+                className="rounded-lg px-3 py-1.5 text-sm text-on-surface-variant transition hover:bg-surface-high hover:text-on-surface"
               >
                 {tab.label}
               </Link>
@@ -53,14 +53,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="ml-auto flex items-center gap-4 text-sm">
             <Link
               href="/"
-              className="text-ink-faint underline underline-offset-4 transition hover:text-ink"
+              className="text-on-surface-variant/60 underline underline-offset-4 transition hover:text-on-surface"
             >
               View the website
             </Link>
             <form action="/api/admin/signout" method="post">
               <button
                 type="submit"
-                className="text-ink-faint transition hover:text-ink"
+                className="text-on-surface-variant/60 transition hover:text-on-surface"
               >
                 Sign out
               </button>
