@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Riverside Dental — Home</title>
+  <style>
+    /* Deliberately aggressive host styles. A clinic's real site will have opinions like these,
+       and the widget must survive all of them without being reshaped. */
+    * { box-sizing: content-box; }
+    button { font-size: 30px !important; background: red; border: 4px dashed lime; padding: 40px; }
+    iframe { border: 8px solid magenta; }
+    body { font-family: Georgia, serif; margin: 0; background: #faf7f2; color: #2a2a2a; }
+    .wrap { max-width: 700px; margin: 0 auto; padding: 60px 24px; }
+    h1 { font-size: 40px; margin: 0 0 8px; }
+    p { line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Riverside Dental</h1>
+    <p>A pretend clinic website, used to check the embed script survives hostile host CSS.</p>
+    <p>The page below sets <code>button { font-size: 30px; background: red; border: 4px dashed lime; padding: 40px }</code>
+       and <code>iframe { border: 8px solid magenta }</code>. If the widget picks any of that up,
+       the shadow root is not doing its job.</p>
+    <button>A host page button, for comparison</button>
+  </div>
+
+  <script src="/widget.js" defer></script>
+</body>
+</html>
