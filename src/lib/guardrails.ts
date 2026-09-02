@@ -24,7 +24,21 @@ import { getSupabase } from './supabase';
  * comes from the same address, and 20 goes quickly. Raise it in .env.local while building;
  * leave it unset in production, where 20 is the point.
  */
-export const DAILY_IP_LIMIT = Number(process.env.DAILY_IP_LIMIT ?? 20);
+export const DAILY_IP_LIMIT = positiveIntOr(process.env.DAILY_IP_LIMIT, 20);
+
+/**
+ * Falls back on anything that is not a positive number.
+ *
+ * `Number(process.env.X ?? 20)` looks equivalent and is not: an empty string is not nullish, so
+ * the fallback never fires and `Number('')` is 0 — a limit of zero messages a day, refusing
+ * every visitor on their first message. A deployment platform that keeps a variable with a blank
+ * value is enough to trigger it, which is exactly the shape of bug that only shows up in
+ * production.
+ */
+function positiveIntOr(raw: string | undefined, fallback: number): number {
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
 
 /** Messages per conversation before the widget offers a fresh start. */
 export const SESSION_MESSAGE_LIMIT = 15;
