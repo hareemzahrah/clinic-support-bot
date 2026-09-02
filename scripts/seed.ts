@@ -9,7 +9,7 @@
  * adversarial test set. Do not widen this.
  */
 
-import 'dotenv/config';
+import './load-env';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { chunkMarkdown } from '../src/lib/ingest/chunk';

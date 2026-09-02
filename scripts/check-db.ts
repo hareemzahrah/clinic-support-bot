@@ -7,7 +7,7 @@
  * a confusing failure partway through ingestion.
  */
 
-import 'dotenv/config';
+import './load-env';
 
 const TABLES = [
   'documents',
