@@ -56,6 +56,7 @@ export default async function LeadsPage() {
   }
 
   const afterHours = leads.filter((l) => outOfHours(l.createdAt)).length;
+  const appointments = leads.filter((l) => l.preferredDay || l.preferredTime).length;
 
   return (
     <div className="space-y-8">
@@ -69,12 +70,19 @@ export default async function LeadsPage() {
       </div>
 
       {leads.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:max-w-md">
+        <div className="grid grid-cols-2 gap-4 sm:max-w-2xl sm:grid-cols-3">
           <div className="rounded-xl border border-cta/40 bg-primary-container/40 p-5">
             <p className="font-display text-3xl font-bold text-primary">{leads.length}</p>
             <p className="font-label mt-2 text-[11px] text-on-surface-variant uppercase">
               Waiting for a call
             </p>
+          </div>
+          <div className="rounded-xl border border-outline-variant/30 bg-surface-mid p-5">
+            <p className="font-display text-3xl font-bold">{appointments}</p>
+            <p className="font-label mt-2 text-[11px] text-on-surface-variant uppercase">
+              Appointment requests
+            </p>
+            <p className="mt-1 text-[12px] text-on-surface-variant/60">to ring back and confirm</p>
           </div>
           <div className="rounded-xl border border-outline-variant/30 bg-surface-mid p-5">
             <p className="font-display text-3xl font-bold">{afterHours}</p>
@@ -107,13 +115,26 @@ export default async function LeadsPage() {
                     className="group rounded-xl border border-outline-variant/30 bg-surface-mid p-5 transition-colors hover:border-cta/40"
                   >
                     <div className="flex items-start gap-3">
-                      <span className="font-label flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-container text-[13px] text-primary">
+                      <span
+                        className={`font-label flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[13px] ${
+                          lead.isUrgent
+                            ? 'bg-danger/20 text-danger'
+                            : 'bg-primary-container text-primary'
+                        }`}
+                      >
                         {initials(lead.name)}
                       </span>
 
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                          <p className="font-semibold text-on-surface">{lead.name}</p>
+                          <p className="flex items-center gap-2 font-semibold text-on-surface">
+                            {lead.name}
+                            {lead.isUrgent && (
+                              <span className="font-label rounded-md bg-danger/15 px-1.5 py-0.5 text-[10px] text-danger uppercase">
+                                Urgent
+                              </span>
+                            )}
+                          </p>
                           <p className="text-[12px] whitespace-nowrap text-on-surface-variant/60">
                             {time(lead.createdAt)}
                             {outOfHours(lead.createdAt) && (
@@ -134,6 +155,15 @@ export default async function LeadsPage() {
                         </a>
                       </div>
                     </div>
+
+                    {(lead.preferredDay || lead.preferredTime) && (
+                      <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-cta/30 bg-primary-container/30 px-3 py-2.5 text-[13px] text-on-surface">
+                        <span className="font-label text-[10px] text-primary uppercase">
+                          Wants an appointment
+                        </span>
+                        <span>{[lead.preferredDay, lead.preferredTime].filter(Boolean).join(', ')}</span>
+                      </p>
+                    )}
 
                     {lead.reason && (
                       <p className="mt-3 rounded-lg bg-surface-high px-3 py-2.5 text-[13px] leading-relaxed text-on-surface-variant">

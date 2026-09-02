@@ -25,49 +25,87 @@ export interface ChatHandlers {
 }
 
 /**
- * A session id, persisted so a returning visitor continues the same conversation.
+ * Session identity, persisted so closing the widget does not throw away the conversation.
  *
- * Wrapped in try/catch because localStorage throws outright in some contexts — private windows
- * with site data blocked, or an iframe whose storage is partitioned. Falling back to an
- * in-memory id keeps the widget working; the visitor just starts fresh.
+ * Closing and reopening keeps the history, which is what Intercom, Crisp and Chatbase all do
+ * and what people expect — losing a conversation because you clicked the X while going back to
+ * read the page is infuriating. The "New chat" button is there for deliberately starting over.
+ *
+ * It does expire, though. A session kept forever means someone returning weeks later reopens a
+ * stale conversation they have forgotten having, and on a shared computer it leaves one
+ * person's dental questions sitting there for the next. A day is long enough to survive a
+ * closed tab and short enough not to be a surprise.
+ *
+ * Every access is wrapped: localStorage throws outright in a private window with site data
+ * blocked, and in an iframe whose storage is partitioned — which is exactly how the widget is
+ * embedded. Falling back to an in-memory id keeps the chat working; the visitor just starts
+ * fresh each page view.
  */
-let memorySessionId: string | null = null;
 
-export function getSessionId(): string {
-  const KEY = 'clinic-bot-session';
+const SESSION_KEY = 'clinic-bot-session';
+const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
+
+interface StoredSession {
+  id: string;
+  lastActiveAt: number;
+}
+
+let memorySession: StoredSession | null = null;
+
+function readStored(): StoredSession | null {
   try {
-    const existing = window.localStorage.getItem(KEY);
-    if (existing) return existing;
-    const created = crypto.randomUUID();
-    window.localStorage.setItem(KEY, created);
-    return created;
+    const raw = window.localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<StoredSession>;
+    if (typeof parsed?.id !== 'string' || typeof parsed?.lastActiveAt !== 'number') return null;
+    return { id: parsed.id, lastActiveAt: parsed.lastActiveAt };
   } catch {
-    memorySessionId ??= crypto.randomUUID();
-    return memorySessionId;
+    // Unreadable, unparseable, or an id written by an earlier version. Start fresh rather than
+    // trying to migrate — the cost of a lost demo conversation is nil.
+    return null;
   }
+}
+
+function writeStored(session: StoredSession) {
+  try {
+    window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  } catch {
+    // Storage unavailable; the in-memory copy carries this page view.
+  }
+}
+
+/** The current session id, rotating it if the last one has gone stale. */
+export function getSessionId(): string {
+  const stored = readStored() ?? memorySession;
+  const now = Date.now();
+
+  if (stored && now - stored.lastActiveAt < SESSION_TTL_MS) {
+    // Touch it, so an active conversation never expires mid-use.
+    const touched = { id: stored.id, lastActiveAt: now };
+    memorySession = touched;
+    writeStored(touched);
+    return stored.id;
+  }
+
+  const created = { id: crypto.randomUUID(), lastActiveAt: now };
+  memorySession = created;
+  writeStored(created);
+  return created.id;
+}
+
+/** True if the stored session has aged out, so the widget can clear the transcript it is showing. */
+export function isSessionExpired(): boolean {
+  const stored = readStored() ?? memorySession;
+  return !stored || Date.now() - stored.lastActiveAt >= SESSION_TTL_MS;
 }
 
 export function resetSession(): string {
-  try {
-    window.localStorage.removeItem('clinic-bot-session');
-  } catch {
-    // Nothing to clear if storage was never available.
-  }
-  memorySessionId = crypto.randomUUID();
-  try {
-    window.localStorage.setItem('clinic-bot-session', memorySessionId);
-  } catch {
-    // In-memory id still works for the rest of this page view.
-  }
-  return memorySessionId;
+  const created = { id: crypto.randomUUID(), lastActiveAt: Date.now() };
+  memorySession = created;
+  writeStored(created);
+  return created.id;
 }
 
-/**
- * Sends a question and streams the reply.
- *
- * Parses SSE by hand rather than using EventSource, which only supports GET and cannot send a
- * request body. Returns once the stream closes.
- */
 export async function sendMessage(
   question: string,
   sessionId: string,
@@ -158,9 +196,19 @@ export async function sendMessage(
   }
 }
 
+export interface LeadSubmission {
+  name: string;
+  contact: string;
+  reason: string;
+  /** Free text as typed — "next Tuesday", "weekday mornings". Optional. */
+  preferredDay?: string;
+  preferredTime?: string;
+  isUrgent?: boolean;
+}
+
 export async function submitLead(
   conversationId: string,
-  lead: { name: string; contact: string; reason: string },
+  lead: LeadSubmission,
 ): Promise<boolean> {
   try {
     const response = await fetch('/api/lead', {

@@ -15,6 +15,7 @@ export const runtime = 'nodejs';
 const MAX_NAME = 100;
 const MAX_CONTACT = 200;
 const MAX_REASON = 500;
+const MAX_PREFERENCE = 120;
 
 /**
  * Deliberately permissive. A visitor may leave an email or a phone number, international
@@ -40,6 +41,15 @@ export async function POST(request: Request) {
   const name = typeof body.name === 'string' ? body.name.trim() : '';
   const contact = typeof body.contact === 'string' ? body.contact.trim() : '';
   const reason = typeof body.reason === 'string' ? body.reason.trim().slice(0, MAX_REASON) : '';
+
+  // Appointment preferences are optional and free text. Kept as the visitor typed them rather
+  // than parsed into a date: loose phrasing like "any weekday morning" does not survive being
+  // forced into a timestamp, and a human reads this before acting on it anyway.
+  const preferredDay =
+    typeof body.preferredDay === 'string' ? body.preferredDay.trim().slice(0, MAX_PREFERENCE) : '';
+  const preferredTime =
+    typeof body.preferredTime === 'string' ? body.preferredTime.trim().slice(0, MAX_PREFERENCE) : '';
+  const isUrgent = body.isUrgent === true;
 
   if (!conversationId) {
     return NextResponse.json({ error: 'Missing conversation.' }, { status: 400 });
@@ -88,6 +98,9 @@ export async function POST(request: Request) {
     email: isEmail ? contact : null,
     phone: isEmail ? null : contact,
     reason: reason || null,
+    preferred_day: preferredDay || null,
+    preferred_time: preferredTime || null,
+    is_urgent: isUrgent,
   });
 
   if (error) {

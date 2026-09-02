@@ -30,6 +30,9 @@ export interface LeadRow {
   email: string | null;
   phone: string | null;
   reason: string | null;
+  preferredDay: string | null;
+  preferredTime: string | null;
+  isUrgent: boolean;
   createdAt: string;
 }
 
@@ -136,7 +139,9 @@ async function leadCountsByConversation(): Promise<Map<string, number>> {
 export async function getLeads(): Promise<LeadRow[]> {
   const { data, error } = await getSupabase()
     .from('leads')
-    .select('id, name, email, phone, reason, created_at')
+    .select('id, name, email, phone, reason, preferred_day, preferred_time, is_urgent, created_at')
+    // Urgent first: a practice should see someone in pain before someone asking about whitening.
+    .order('is_urgent', { ascending: false })
     .order('created_at', { ascending: false });
 
   if (error) throw new Error(`Could not load leads: ${error.message}`);
@@ -147,6 +152,9 @@ export async function getLeads(): Promise<LeadRow[]> {
     email: row.email,
     phone: row.phone,
     reason: row.reason,
+    preferredDay: row.preferred_day,
+    preferredTime: row.preferred_time,
+    isUrgent: row.is_urgent ?? false,
     createdAt: row.created_at,
   }));
 }
