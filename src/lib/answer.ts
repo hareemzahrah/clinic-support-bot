@@ -246,6 +246,27 @@ export type AnswerChunk =
  *
  * Text is never un-emitted: each yield is a suffix of what has already been sent.
  */
+/**
+ * Whether a failure is worth retrying.
+ *
+ * `overloaded_error` (529) is the one that actually shows up — the API is momentarily busy and
+ * the same request succeeds a second later. Seen live during Phase 3 testing, where it surfaced
+ * to the visitor as "something went wrong at our end" for a blip. On a public demo that a client
+ * might click once, a transient error and a broken product look identical.
+ */
+function isTransient(cause: unknown): boolean {
+  const status = (cause as { status?: number })?.status;
+  const type = (cause as { error?: { error?: { type?: string } } })?.error?.error?.type;
+  return (
+    type === 'overloaded_error' ||
+    status === 429 ||
+    status === 408 ||
+    (typeof status === 'number' && status >= 500)
+  );
+}
+
+const MAX_STREAM_ATTEMPTS = 3;
+
 export async function* answerStream(
   question: string,
   chunks: RetrievedChunk[],
@@ -258,6 +279,36 @@ export async function* answerStream(
     return;
   }
 
+  // Retry only while nothing has been shown to the visitor. Once the first words are on screen
+  // a retry would replay them, so a mid-stream failure has to surface instead.
+  for (let attempt = 1; attempt <= MAX_STREAM_ATTEMPTS; attempt++) {
+    let yieldedAnything = false;
+    try {
+      for await (const part of streamOnce(question, chunks, history)) {
+        yieldedAnything = true;
+        yield part;
+      }
+      return;
+    } catch (cause) {
+      // Once anything has reached the visitor, a retry would replay it. Give up and let the
+      // error surface rather than emitting the opening of the answer twice.
+      if (yieldedAnything || attempt === MAX_STREAM_ATTEMPTS || !isTransient(cause)) throw cause;
+      await new Promise((resolve) => setTimeout(resolve, 400 * 2 ** (attempt - 1)));
+    }
+  }
+}
+
+/**
+ * One attempt at streaming a reply.
+ *
+ * Throws before yielding anything if the request fails to start, which is what lets the caller
+ * retry safely. Any error after the first yield propagates.
+ */
+async function* streamOnce(
+  question: string,
+  chunks: RetrievedChunk[],
+  history: Array<{ role: 'user' | 'assistant'; content: string }>,
+): AsyncGenerator<AnswerChunk> {
   const client = new Anthropic();
 
   const stream = client.messages.stream({
