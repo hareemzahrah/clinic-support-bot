@@ -40,6 +40,15 @@ async function main() {
   // a JWT whose payload contains "anon", and it would fail later with confusing empty results
   // rather than an error, because RLS silently returns zero rows.
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  // New-style keys are opaque and prefixed. A publishable key here is the same mistake as
+  // the old anon key: RLS would return zero rows with no error at all.
+  if (key?.startsWith('sb_publishable_')) {
+    bad('SUPABASE_SERVICE_ROLE_KEY holds a PUBLISHABLE key, not a secret key');
+    problems.push(
+      'Project Settings -> API Keys -> Secret keys -> copy or create the sb_secret_... key.',
+    );
+  }
   if (key?.includes('.')) {
     try {
       const payload = JSON.parse(Buffer.from(key.split('.')[1], 'base64').toString());
