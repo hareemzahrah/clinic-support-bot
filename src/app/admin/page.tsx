@@ -128,7 +128,7 @@ function VolumeChart({ days }: { days: DayVolume[] }) {
         <h2 className="font-display text-[15px] font-semibold">Questions per day</h2>
         <div className="flex items-center gap-4 text-[12px] text-on-surface-variant">
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-primary/40" /> Answered
+            <span className="h-2.5 w-2.5 rounded-sm bg-primary/35" /> Answered
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-sm bg-cta" /> Couldn&rsquo;t answer
@@ -136,40 +136,31 @@ function VolumeChart({ days }: { days: DayVolume[] }) {
         </div>
       </div>
 
-      {/* 0–100 viewBox with preserveAspectRatio="none" so it stretches to any column width
-          without measuring — no client component, no resize listener. */}
-      <svg
-        viewBox="0 0 100 40"
-        preserveAspectRatio="none"
-        className="h-44 w-full"
-        role="img"
-        aria-label="Questions per day, answered and unanswered"
-      >
-        {days.map((day, i) => {
-          const barWidth = 100 / days.length;
-          const answered = (day.answered / max) * 38;
-          const unanswered = (day.unanswered / max) * 38;
-          const x = i * barWidth + barWidth * 0.2;
-          const w = barWidth * 0.6;
-
+      {/* Percentage heights need a definite parent, so each column carries h-full. Without it
+          they collapse to nothing — which is exactly what happened to the hours chart below. */}
+      <div className="flex h-44 items-end gap-1.5">
+        {days.map((day) => {
+          const total = day.answered + day.unanswered;
           return (
-            <g key={day.date}>
-              <title>{`${day.date}: ${day.answered + day.unanswered} asked, ${day.unanswered} unanswered`}</title>
-              <rect x={x} y={40 - answered} width={w} height={answered} rx={0.4} className="fill-primary/40" />
-              <rect
-                x={x}
-                y={40 - answered - unanswered}
-                width={w}
-                height={unanswered}
-                rx={0.4}
-                className="fill-cta"
+            <div
+              key={day.date}
+              title={`${new Date(day.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} — ${total} asked, ${day.unanswered} unanswered`}
+              className="group flex h-full flex-1 flex-col justify-end"
+            >
+              <div
+                className="w-full rounded-t bg-cta transition-opacity group-hover:opacity-80"
+                style={{ height: `${(day.unanswered / max) * 100}%` }}
               />
-            </g>
+              <div
+                className="w-full bg-primary/35 transition-opacity group-hover:opacity-80"
+                style={{ height: `${(day.answered / max) * 100}%` }}
+              />
+            </div>
           );
         })}
-      </svg>
+      </div>
 
-      <div className="mt-2 flex justify-between text-[11px] text-on-surface-variant/50">
+      <div className="mt-2.5 flex justify-between text-[11px] text-on-surface-variant/50">
         <span>
           {new Date(days[0]?.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
         </span>
@@ -191,13 +182,18 @@ function HourChart({ hours }: { hours: HourBucket[] }) {
         </span>
       </div>
 
+      {/* h-full on the column is load-bearing: a percentage height resolves against the
+          parent's height, and without it the parent sizes to its content — which is the bar,
+          which has no height yet. The chart rendered completely empty. */}
       <div className="flex h-32 items-end gap-[3px]">
         {hours.map((h) => (
-          <div key={h.hour} className="group relative flex flex-1 flex-col justify-end">
+          <div key={h.hour} className="flex h-full flex-1 flex-col justify-end">
             <div
-              title={`${String(h.hour).padStart(2, '0')}:00 — ${h.count} questions`}
-              className={`w-full rounded-t-sm ${h.open ? 'bg-primary/35' : 'bg-cta'}`}
-              style={{ height: `${Math.max((h.count / max) * 100, 2)}%` }}
+              title={`${String(h.hour).padStart(2, '0')}:00 — ${h.count} question${h.count === 1 ? '' : 's'}`}
+              className={`w-full rounded-t-sm transition-opacity hover:opacity-80 ${
+                h.open ? 'bg-primary/35' : 'bg-cta'
+              }`}
+              style={{ height: `${Math.max((h.count / max) * 100, 1.5)}%` }}
             />
           </div>
         ))}

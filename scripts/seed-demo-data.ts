@@ -95,14 +95,28 @@ const LEADS = [
 ] as const;
 
 /**
- * A timestamp within the last `DAYS`, weighted so a third falls outside opening hours.
+ * Relative traffic per day, most recent last.
  *
- * This is the detail that makes the dashboard argue for itself: a clinic looking at their own
- * gaps report should be able to see that a third of these arrived when nobody was there to
- * pick up the phone.
+ * Real support traffic is not flat: weekdays carry it, Saturdays are quieter, Sundays quietest,
+ * and no two days match. Distributing evenly — which the first version did, with `seed % DAYS` —
+ * gave every bar on the dashboard the same height. Technically correct data that looked
+ * obviously synthetic, which defeats the point of seeding it at all.
+ */
+const DAY_WEIGHTS = [1.0, 0.85, 1.2, 0.45, 0.3, 1.15, 0.95, 1.3, 0.9, 1.05, 0.5, 0.35, 1.25, 1.1];
+
+/** Day offsets repeated in proportion to their weight, so picking by index lands realistically. */
+const DAY_LOTTERY: number[] = DAY_WEIGHTS.flatMap((weight, day) =>
+  Array.from({ length: Math.round(weight * 10) }, () => DAYS - 1 - day),
+);
+
+/**
+ * A timestamp within the last `DAYS`, weighted so a good share falls outside opening hours.
+ *
+ * That share is the detail making the dashboard argue for itself: a clinic looking at their own
+ * report should see how many arrived when nobody was there to pick up the phone.
  */
 function timestamp(seed: number): Date {
-  const day = seed % DAYS;
+  const day = DAY_LOTTERY[(seed * 7) % DAY_LOTTERY.length];
   const outOfHours = seed % 3 === 0;
 
   const hour = outOfHours
