@@ -235,3 +235,43 @@ drop trigger if exists documents_set_updated_at on documents;
 create trigger documents_set_updated_at
   before update on documents
   for each row execute function set_updated_at();
+
+-- ---------------------------------------------------------------------------
+-- Data API grants
+-- ---------------------------------------------------------------------------
+--
+-- Required when the project has "Automatically expose new tables" turned OFF,
+-- which is Supabase's own recommendation and what this project uses. With that
+-- setting off, a new table is invisible to the Data API (PostgREST) until it is
+-- explicitly granted -- including to service_role, which is what our server
+-- code authenticates as. Without these grants `npm run seed` fails on a
+-- permissions error.
+--
+-- These statements are harmless if the setting is left ON, so the migration
+-- works either way.
+--
+-- The shape is deliberate: service_role gets everything, anon and authenticated
+-- get nothing. That is belt and braces alongside RLS. RLS already blocks anon
+-- because no policies exist, but a revoked grant means that even if someone
+-- later disables RLS on a table by mistake, the public keys still cannot read
+-- it. Two independent locks, not one.
+
+grant usage on schema public to service_role;
+
+grant all on all tables    in schema public to service_role;
+grant all on all routines  in schema public to service_role;
+grant all on all sequences in schema public to service_role;
+
+revoke all on all tables    in schema public from anon, authenticated;
+revoke all on all routines  in schema public from anon, authenticated;
+revoke all on all sequences in schema public from anon, authenticated;
+
+-- Apply the same rule to anything added by a future migration, so this does not
+-- have to be remembered every time a table is created.
+alter default privileges in schema public grant all on tables    to service_role;
+alter default privileges in schema public grant all on functions to service_role;
+alter default privileges in schema public grant all on sequences to service_role;
+
+alter default privileges in schema public revoke all on tables    from anon, authenticated;
+alter default privileges in schema public revoke all on functions from anon, authenticated;
+alter default privileges in schema public revoke all on sequences from anon, authenticated;
