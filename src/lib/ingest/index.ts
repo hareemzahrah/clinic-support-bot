@@ -18,6 +18,11 @@ export interface IngestSource {
   input: { type: 'file'; buffer: Buffer; filename: string } | { type: 'url'; url: string };
   /** Overrides the title derived from the filename or page. */
   title?: string;
+  /**
+   * Minimum gap between embedding requests, in milliseconds. Bulk seeding sets this to stay
+   * under Voyage's free-tier limit of 3 requests per minute. Leave unset for single uploads.
+   */
+  minIntervalMs?: number;
 }
 
 export interface IngestResult {
@@ -65,6 +70,7 @@ export async function ingest(source: IngestSource): Promise<IngestResult> {
     const { embeddings, totalTokens } = await embed(
       chunks.map((c) => c.content),
       'document',
+      { minIntervalMs: source.minIntervalMs },
     );
 
     await storeChunks(documentId, chunks, embeddings);

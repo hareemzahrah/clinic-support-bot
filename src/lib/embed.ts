@@ -26,7 +26,31 @@ export const EMBED_DIMENSIONS = 1024;
  */
 const BATCH_SIZE = 100;
 
-const MAX_RETRIES = 4;
+const MAX_RETRIES = 5;
+
+/**
+ * Voyage throttles accounts with no payment method to 3 requests per minute. Exponential
+ * backoff from a few hundred milliseconds never clears that window, so a 429 gets its own
+ * fixed wait just over the 20-second spacing 3 RPM implies.
+ *
+ * Adding a card lifts this without costing anything: the 200M free token allowance still
+ * applies, and this corpus uses about 8,000 of them.
+ */
+const RATE_LIMIT_BACKOFF_MS = 22_000;
+
+/**
+ * Optional client-side pacing, used by bulk ingestion to stay under the free-tier limit
+ * rather than discovering it through failures. Never applied to queries — a chat request
+ * cannot wait 20 seconds.
+ */
+let lastRequestAt = 0;
+
+async function pace(minIntervalMs: number) {
+  if (minIntervalMs <= 0) return;
+  const waitFor = lastRequestAt + minIntervalMs - Date.now();
+  if (waitFor > 0) await sleep(waitFor);
+  lastRequestAt = Date.now();
+}
 
 /**
  * Documents and queries are embedded into deliberately different spaces. Passing the wrong
@@ -58,11 +82,19 @@ function apiKey(): string {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function embedBatch(texts: string[], inputType: InputType): Promise<EmbedResult> {
+async function embedBatch(
+  texts: string[],
+  inputType: InputType,
+  minIntervalMs: number,
+): Promise<EmbedResult> {
   let lastError: unknown;
+  let rateLimited = false;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    if (attempt > 0) await sleep(2 ** attempt * 500);
+    if (attempt > 0) {
+      await sleep(rateLimited ? RATE_LIMIT_BACKOFF_MS : 2 ** attempt * 500);
+    }
+    await pace(minIntervalMs);
 
     let response: Response;
     try {
@@ -110,6 +142,7 @@ async function embedBatch(texts: string[], inputType: InputType): Promise<EmbedR
     if (response.status !== 429 && response.status < 500) {
       throw new Error(`Voyage API error ${response.status}: ${body}`);
     }
+    rateLimited = response.status === 429;
     lastError = new Error(`Voyage API error ${response.status}: ${body}`);
   }
 
@@ -119,15 +152,28 @@ async function embedBatch(texts: string[], inputType: InputType): Promise<EmbedR
 /**
  * Embed many texts, batching automatically. Order of the returned array matches the input.
  */
-export async function embed(texts: string[], inputType: InputType): Promise<EmbedResult> {
+export interface EmbedOptions {
+  /**
+   * Minimum gap between API requests. Set by bulk ingestion to respect the free tier's
+   * 3 requests per minute. Leave at 0 for interactive queries.
+   */
+  minIntervalMs?: number;
+}
+
+export async function embed(
+  texts: string[],
+  inputType: InputType,
+  options: EmbedOptions = {},
+): Promise<EmbedResult> {
   if (texts.length === 0) return { embeddings: [], totalTokens: 0 };
+  const minIntervalMs = options.minIntervalMs ?? 0;
 
   const embeddings: number[][] = [];
   let totalTokens = 0;
 
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {
     const batch = texts.slice(i, i + BATCH_SIZE);
-    const result = await embedBatch(batch, inputType);
+    const result = await embedBatch(batch, inputType, minIntervalMs);
     embeddings.push(...result.embeddings);
     totalTokens += result.totalTokens;
   }

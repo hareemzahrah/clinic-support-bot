@@ -106,6 +106,11 @@ async function runReal() {
           buffer: readFileSync(join(CONTENT_DIR, file)),
           filename: file,
         },
+        // Voyage throttles accounts with no payment method to 3 requests per minute. Pacing
+        // here means a slow seed rather than a failed one. Override with VOYAGE_MIN_INTERVAL_MS=0
+        // once a payment method is added (which does not cost anything — the 200M free tokens
+        // still apply; it only lifts the rate limit).
+        minIntervalMs: Number(process.env.VOYAGE_MIN_INTERVAL_MS ?? 21_000),
       });
 
       totalChunks += result.chunkCount;
