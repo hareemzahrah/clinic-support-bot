@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { retrieve } from '../src/lib/retrieve';
 import { answer, type AnswerUsage } from '../src/lib/answer';
-import { titleFromFilename } from '../src/lib/ingest/extract';
+import { corpusTitle } from './corpus-title';
 
 const SETS = join(process.cwd(), 'test-sets');
 const HEADING = /^##\s+.*`(0\d[^`]*\.md)`/;
@@ -48,7 +48,7 @@ function parseRetrievalSet(): TestCase[] {
       cases.push({
         n: Number(r[1]),
         question: r[2],
-        wantedTitle: titleFromFilename(doc),
+        wantedTitle: corpusTitle(doc),
         shouldAnswer: true,
       });
     }

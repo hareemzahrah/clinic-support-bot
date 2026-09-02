@@ -15,7 +15,7 @@ import './load-env';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { retrieve, DEFAULT_THRESHOLD, DEFAULT_TOP_K } from '../src/lib/retrieve';
-import { titleFromFilename } from '../src/lib/ingest/extract';
+import { corpusTitle } from './corpus-title';
 
 const SET_PATH = join(process.cwd(), 'test-sets', 'retrieval-set.md');
 
@@ -64,7 +64,7 @@ function parseCases(): Case[] {
  * "01-services-and-treatments.md" becomes "Services And Treatments". Run the expected
  * filename through the same function so the comparison is exact rather than fuzzy.
  */
-const expectedTitle = (filename: string) => titleFromFilename(filename);
+const expectedTitle = (filename: string) => corpusTitle(filename);
 
 interface Scored extends Case {
   hit: boolean;

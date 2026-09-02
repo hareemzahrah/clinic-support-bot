@@ -222,3 +222,106 @@ export async function answer(
     },
   };
 }
+
+/**
+ * How much of the tail to withhold while streaming.
+ *
+ * The model appends "SOURCES: 1, 3" after the reply, which must never reach the visitor. Since
+ * it can only appear at the very end, holding back this many characters guarantees a partial
+ * SOURCES line is still inside the buffer when the stream finishes, so it can be stripped
+ * rather than un-emitted. Long enough for "SOURCES: " plus five comma-separated numbers.
+ */
+const STREAM_HOLDBACK = 32;
+
+export type AnswerChunk =
+  | { type: 'text'; text: string }
+  | { type: 'done'; result: AnswerResult };
+
+/**
+ * Streaming counterpart of `answer`.
+ *
+ * Yields display-ready text as it arrives — the marker and the SOURCES line are stripped on the
+ * way through, so a caller can pipe `text` straight to the browser. The final `done` chunk
+ * carries the parsed verdict and usage, which are only knowable once the reply is complete.
+ *
+ * Text is never un-emitted: each yield is a suffix of what has already been sent.
+ */
+export async function* answerStream(
+  question: string,
+  chunks: RetrievedChunk[],
+  history: Array<{ role: 'user' | 'assistant'; content: string }> = [],
+): AsyncGenerator<AnswerChunk> {
+  if (chunks.length === 0) {
+    const result = await answer(question, chunks, history);
+    yield { type: 'text', text: result.text };
+    yield { type: 'done', result };
+    return;
+  }
+
+  const client = new Anthropic();
+
+  const stream = client.messages.stream({
+    model: MODEL,
+    max_tokens: 1200,
+    output_config: { effort: 'low' },
+    system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+    messages: [
+      ...history,
+      {
+        role: 'user',
+        content: `Extracts from the practice's documents:\n\n${buildContext(chunks)}\n\n---\n\nPatient's question: ${question}`,
+      },
+    ],
+  });
+
+  let raw = '';
+  let emitted = 0;
+
+  for await (const event of stream) {
+    if (event.type !== 'content_block_delta' || event.delta.type !== 'text_delta') continue;
+
+    raw += event.delta.text;
+
+    // Re-parse each time rather than tracking parser state across deltas. The strings are tiny
+    // and it means the streaming path and the batch path cannot disagree about what the body is.
+    const body = parse(raw, chunks).text;
+    const safeLength = Math.max(0, body.length - STREAM_HOLDBACK);
+
+    if (safeLength > emitted) {
+      yield { type: 'text', text: body.slice(emitted, safeLength) };
+      emitted = safeLength;
+    }
+  }
+
+  const final = await stream.finalMessage();
+  const parsed = parse(raw, chunks);
+
+  if (parsed.text.length > emitted) {
+    yield { type: 'text', text: parsed.text.slice(emitted) };
+  }
+
+  const u = final.usage;
+  const cacheRead = u.cache_read_input_tokens ?? 0;
+  const cacheWrite = u.cache_creation_input_tokens ?? 0;
+
+  yield {
+    type: 'done',
+    result: {
+      answered: parsed.answered,
+      text: parsed.text,
+      citedChunkIds: parsed.citedChunkIds,
+      raw,
+      usage: {
+        inputTokens: u.input_tokens,
+        outputTokens: u.output_tokens,
+        cacheReadTokens: cacheRead,
+        cacheWriteTokens: cacheWrite,
+        costUsd:
+          (u.input_tokens / 1e6) * INPUT_PER_MTOK +
+          (u.output_tokens / 1e6) * OUTPUT_PER_MTOK +
+          (cacheWrite / 1e6) * CACHE_WRITE_PER_MTOK +
+          (cacheRead / 1e6) * CACHE_READ_PER_MTOK,
+      },
+    },
+  };
+}

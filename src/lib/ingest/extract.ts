@@ -118,7 +118,26 @@ export async function extractFile(buffer: Buffer, filename: string): Promise<Ext
 
   if (!text.trim()) throw new EmptyDocumentError(filename);
 
-  return { text, title: titleFromFilename(filename) };
+  return { text, title: titleFromText(text) ?? titleFromFilename(filename) };
+}
+
+/**
+ * A document's own top-level heading, if it has one.
+ *
+ * Preferred over the filename because document titles are shown to visitors in citations, and
+ * deriving them from filenames mangles anything that is not a plain word: "03-nhs-and-private.md"
+ * title-cases into "Nhs And Private", while the document's own heading reads "NHS and Private
+ * Care". Acronyms, capitalisation and wording are all already correct in the source.
+ *
+ * Only the first heading in the first few lines counts, so a stray "#" deeper in the file cannot
+ * become the title.
+ */
+function titleFromText(text: string): string | null {
+  for (const line of text.split('\n', 5)) {
+    const heading = line.match(/^#\s+(.+?)\s*$/);
+    if (heading) return heading[1];
+  }
+  return null;
 }
 
 export async function extractSource(

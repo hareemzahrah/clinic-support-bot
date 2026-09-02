@@ -17,7 +17,7 @@ import './load-env';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { retrieve, DEFAULT_TOP_K } from '../src/lib/retrieve';
-import { titleFromFilename } from '../src/lib/ingest/extract';
+import { corpusTitle } from './corpus-title';
 
 const SETS = join(process.cwd(), 'test-sets');
 const THRESHOLDS = [0.2, 0.25, 0.3, 0.32, 0.35, 0.4, 0.45];
@@ -34,7 +34,7 @@ function parseRetrievalSet() {
     if (line.startsWith('## ')) { doc = null; continue; }
     if (!doc) continue;
     const r = line.match(NUMBERED_ROW);
-    if (r) cases.push({ n: Number(r[1]), question: r[2], wantedTitle: titleFromFilename(doc) });
+    if (r) cases.push({ n: Number(r[1]), question: r[2], wantedTitle: corpusTitle(doc) });
   }
   return cases;
 }
