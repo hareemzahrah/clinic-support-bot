@@ -407,12 +407,23 @@ function Footer() {
           <p className="text-sm text-on-surface-variant/60">
             Ashfield Dental Practice is fictional — a portfolio demonstration.
           </p>
-          <Link
-            href="/how-it-works"
-            className="font-label text-xs text-primary underline underline-offset-4 transition hover:text-secondary"
-          >
-            How the assistant works
-          </Link>
+          {/* Real practice sites carry a staff login in the footer, so this is not a demo
+              affordance bolted on — but it does double as the only way a visitor finds the
+              dashboard. Without it the best part of the project is unreachable by clicking. */}
+          <div className="flex items-center gap-5">
+            <Link
+              href="/how-it-works"
+              className="font-label text-xs text-primary underline underline-offset-4 transition hover:text-secondary"
+            >
+              How the assistant works
+            </Link>
+            <Link
+              href="/login"
+              className="font-label text-xs text-on-surface-variant/70 transition hover:text-primary"
+            >
+              Practice login
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

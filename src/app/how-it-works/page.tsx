@@ -91,6 +91,17 @@ export default function HowItWorks() {
 
         <section className="mt-14">
           <h2 className="font-display text-2xl font-semibold">What a practice gets</h2>
+          <p className="mt-3 rounded-xl border border-cta/40 bg-primary-container/30 px-5 py-3.5 text-sm leading-relaxed">
+            <Link
+              href="/login"
+              className="font-medium text-primary underline underline-offset-4 hover:text-secondary"
+            >
+              Open the practice dashboard →
+            </Link>{' '}
+            <span className="text-on-surface-variant">
+              Sign in with the demo button; the data is fictional and the account is read-only.
+            </span>
+          </p>
           <dl className="mt-5 space-y-5 leading-relaxed">
             <div>
               <dt className="font-medium">Fewer repeated phone calls</dt>
