@@ -407,9 +407,10 @@ function Footer() {
           <p className="text-sm text-on-surface-variant/60">
             Ashfield Dental Practice is fictional — a portfolio demonstration.
           </p>
-          {/* Real practice sites carry a staff login in the footer, so this is not a demo
-              affordance bolted on — but it does double as the only way a visitor finds the
-              dashboard. Without it the best part of the project is unreachable by clicking. */}
+          {/* The only way a visitor reaches the dashboard by clicking. Named "Staff dashboard"
+              rather than "Practice login": a patient reading "login" assumes it is an account
+              for them and clicks expecting their own records, while "staff" says plainly who it
+              is for — and tells anyone evaluating the project exactly what is behind it. */}
           <div className="flex items-center gap-5">
             <Link
               href="/how-it-works"
@@ -421,7 +422,7 @@ function Footer() {
               href="/login"
               className="font-label text-xs text-on-surface-variant/70 transition hover:text-primary"
             >
-              Practice login
+              Staff dashboard
             </Link>
           </div>
         </div>
