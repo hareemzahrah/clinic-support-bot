@@ -111,6 +111,12 @@ npm run test:adversarial # the gate, ~15 questions
 npm run test:answers     # full suite with the grounding check
 ```
 
+## Picking this up
+
+`PROJECT-CONTEXT.md` is the handover: what the project is, which decisions were reached by
+measurement rather than preference, and which things break silently if changed without knowing
+why they are the way they are. Read it before making changes.
+
 ## Running it
 
 ```bash
