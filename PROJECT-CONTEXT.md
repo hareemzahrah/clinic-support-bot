@@ -1,11 +1,10 @@
 # Project context — read this first
 
-Written for a fresh AI session picking this project up cold. It covers what the project is,
-which decisions were reached by measurement, and which things will break if changed without
+Written for anyone picking this project up cold. It covers what the project is, which
+decisions were reached by measurement, and which things will break if changed without
 understanding why they are the way they are.
 
-**Built by Hareem.** Portfolio project #1 of two, for an Upwork freelancing profile, and now also
-cited on a Masters application to Chinese universities.
+**Built by Hareem.**
 
 ---
 
@@ -33,13 +32,6 @@ passes. The Vercel cron keeps Supabase awake.
 | Unanswerable refused | 15 / 15 |
 | Unsupported claims | 0 / 65 |
 | Cost per message | ~$0.0088 |
-
-Outstanding, and all belonging to Hareem rather than to the code: record the Loom (script in
-`LOOM-SCRIPT.md`), top up the Anthropic balance before sending proposals, resolve a GitHub
-account billing lock, and build portfolio project #2 — an invoice-to-Excel extractor, in Python
-deliberately, so the profile is not two TypeScript projects.
-
----
 
 ## Decisions reached by measurement — do not quietly reverse these
 
@@ -155,20 +147,3 @@ strip, an area chart with a real Y-axis, and list rows with a proportional block
 
 Images live in `public/img/` rather than the Google CDN links Stitch emitted, which are
 temporary.
-
----
-
-## Working with Hareem
-
-Beginner freelancer, comfortable with React and Next.js. Wants **real numbers, not hand-waves** —
-especially on cost, and especially before committing to anything that spends money. Has limited
-budget: prefers free tiers, and card access has been a constraint.
-
-Has rejected several design directions before settling on the Stitch export. **Do not guess at
-visual taste** — ask for a reference or a screenshot rather than producing another variation.
-
-Catches real problems: the empty chart, the misleading two-line graph, the "login" label that
-would confuse patients. Take the observations seriously rather than explaining them away.
-
-Explain terms on first use. Say when something is genuinely optional. Flag anything that will
-cost money before doing it.

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-31
 **Author:** Hareem
-**Purpose:** Upwork portfolio project #1 — a customer-support AI chatbot for dental and medical clinics.
+**Purpose:** A customer-support AI chatbot for dental and medical clinics.
 
 ---
 
@@ -97,7 +97,7 @@ Ingestion (background)
 
 **Why pgvector rather than Pinecone:** below roughly a million chunks Postgres handles this well, and metadata filters, permissions, and vector search happen in one query. One service instead of two is also one less thing to explain and pay for.
 
-**Why TypeScript rather than Python:** this project's value is a polished artifact a client can click. Portfolio project #2 (the invoice extractor) will be Python, so the finished profile shows both.
+**Why TypeScript rather than Python:** this project's value is a polished artifact a client can click, and the whole surface — embeddable widget, admin dashboard, API routes — then lives in one language and one deployment.
 
 ---
 
@@ -259,14 +259,14 @@ Phases 1 and 2 ship without any UI on purpose. If retrieval is weak, a polished 
 
 ---
 
-## 11. Upwork deliverables
+## 11. Deliverables
 
 The code is half the project. These are the other half:
 
-- **Live demo link**, seeded with real clinic content, linked from the Upwork profile
-- **Loom walkthrough, 60–90 seconds:** ask a normal question, ask an unanswerable one to show the refusal, capture a lead, then show the gaps dashboard. That sequence is the whole pitch.
+- **Live demo link**, seeded with realistic clinic content
+- **Walkthrough video, 60–90 seconds:** ask a normal question, ask an unanswerable one to show the refusal, capture a lead, then show the gaps dashboard. That sequence is the whole pitch.
 - **README as case study:** problem → approach → screenshots → the measured accuracy number from the test set
-- **Honest framing:** self-initiated, built on real public clinic content. Then offer it free to one actual local clinic in exchange for a named testimonial — that converts the showcase into genuine client experience.
+- **Honest framing:** self-initiated, built on researched public clinic content, with the demo practice clearly labelled as fictional.
 
 ---
 

@@ -10,11 +10,11 @@
 
 The original plan said "pull their actual FAQ pages." I researched four real UK practices to learn what documents clinics actually publish, how they word their policies, and what patients phone in to ask — then wrote an original composite from that research. Three reasons:
 
-1. **Legal.** Republishing a real practice's pricing and policies on a public demo, without permission, invites a takedown request. That is not a conversation you want during your first month freelancing.
+1. **Legal.** Republishing a real practice's pricing and policies on a public demo, without permission, invites a takedown request. That is not a conversation worth inviting.
 2. **Accuracy.** Scraped prices go stale. A demo quoting a real clinic's 2026 fees incorrectly is worse than one quoting a fictional clinic's fees correctly.
 3. **Control.** Some questions must have no answer in the corpus, or the refusal test is meaningless. You cannot design those gaps into content you scraped.
 
-The realism that matters for a portfolio comes from the **questions being real** and the content having real depth and structure. Both are true here.
+The realism that matters comes from the **questions being real** and the content having real depth and structure. Both are true here.
 
 When a client asks "can it work with my content?", the answer is that you re-index and it takes ten minutes. That is a better answer than "I used your competitor's website."
 
