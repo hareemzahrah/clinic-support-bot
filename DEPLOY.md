@@ -1,11 +1,14 @@
 # Deploying
 
+This project is already deployed at https://clinic-support-bot.vercel.app. What follows is the
+runbook for standing up a **fresh instance** — a second environment, or your own copy.
+
 Roughly half an hour. Order matters — the keep-alive needs a live URL, and Vercel needs a repo.
 
 ## 1. Push to GitHub
 
-The repo has no remote yet. Create an **empty** repository on GitHub (no README, no .gitignore —
-this project already has both), then:
+Fork this repository, or create an **empty** one (no README, no .gitignore — this project
+already has both) and point a remote at it:
 
 ```bash
 git remote add origin https://github.com/YOUR-USERNAME/clinic-support-bot.git
