@@ -41,3 +41,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local dev tooling, not part of the project
+.claude/
+AGENTS.md
+CLAUDE.md
